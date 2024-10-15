@@ -1,3 +1,3 @@
 class fourmis:
     def __init__(self):
-        pass
+        self.pattes = 5
