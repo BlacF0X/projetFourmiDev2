@@ -16,7 +16,7 @@ liste_fourmis = []
 for i in range(100):
     liste_fourmis.append(Ant(i))
 
-# Boucle principale
+# Boucle principales
 while True:
     for event in pg.event.get():
         if event.type == pg.QUIT:
