@@ -26,7 +26,7 @@ while True:
             exit()
 #lalala
     # Remplir l'écran avec une légère transparence pour créer l'effet de traînée
-    overlay = pg.Surface((1500, 800), pg.SRCALPHA)
+    overlay = pg.Surface((1500, 800))
     overlay.fill((211, 192, 157))  # Couleur du fond avec faible opacité
     screen.blit(overlay, (0, 0))
 

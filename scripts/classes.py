@@ -79,7 +79,7 @@ class Ant:
 class pheromone:
     def __init__(self,posit = (0,0),type = 0):
         self.__type = type
-        self.__vie = 180
+        self.__vie = 360
         self.__pos = posit
         self.alpha = 100
         self.exist = True
@@ -88,8 +88,9 @@ class pheromone:
         self.rect = self.surface.get_rect(center=self.__pos)
 
     def fade(self):
-        self.alpha = int(7200/72)
+        self.alpha = int(self.__vie/(self.__vie/100))
         self.__vie -= 1
+        self.surface.fill((125, 45, 45, self.alpha))
         if self.__vie == 0:
             self.exist = False
 
