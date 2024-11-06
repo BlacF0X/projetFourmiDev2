@@ -3,6 +3,7 @@ import random
 import math
 
 
+
 # Classe Ant
 class Ant:
     def __init__(self, numero, ant_type="test"):
@@ -14,10 +15,11 @@ class Ant:
         self.image = pg.image.load('scripts/images/ants.png').convert_alpha()
         self.original_image = self.image  # Conserver l'image d'origine pour rotation
         self.rect = self.image.get_rect(center=self.__position)
+        self.__pheromon_list = []
 
         # Liste des positions pour la traînée
         self.trail = []
-        self.max_trail_length = 20  # Longueur maximale de la traînée
+        self.max_trail_length = 10  # Longueur maximale de la traînée
 
     def move(self):
         # Changement d'angle progressif
@@ -54,7 +56,7 @@ class Ant:
 
     def draw_trail(self, screen):
         # Couleur de base de la traînée
-        base_color = (255, 0, 0)  # Rouge par exemple
+        base_color = (125,45,50)  # Rouge par exemple
 
         # Dessiner chaque position dans la traînée avec une opacité décroissante
         for i, pos in enumerate(self.trail):
@@ -63,3 +65,32 @@ class Ant:
             trail_surface = pg.Surface((5, 5), pg.SRCALPHA)  # Surface avec canal alpha
             trail_surface.fill(color)
             screen.blit(trail_surface, pos)
+
+    def spwan_pheromon(self):
+        self.__pheromon_list.append(pheromone(self.__position))
+
+    def pheromon_fade(self,screen):
+        for ph in self.__pheromon_list:
+            ph.fade()
+            if ph.exist == False:
+                self.__pheromon_list.remove(ph)
+            screen.blit(ph.surface, ph.rect)
+
+class pheromone:
+    def __init__(self,posit = (0,0),type = 0):
+        self.__type = type
+        self.__vie = 180
+        self.__pos = posit
+        self.alpha = 100
+        self.exist = True
+        self.surface = pg.Surface((3,3), pg.SRCALPHA)
+        self.surface.fill((125,45,45,self.alpha))
+        self.rect = self.surface.get_rect(center=self.__pos)
+
+    def fade(self):
+        self.alpha = int(7200/72)
+        self.__vie -= 1
+        if self.__vie == 0:
+            self.exist = False
+
+
