@@ -11,7 +11,7 @@ screen = pg.display.set_mode((1500, 800))
 pg.display.set_caption('Ant Sim')
 clock = pg.time.Clock()
 
-# Liste des fourmis
+# Liste des fourmiss
 liste_fourmis = []
 for i in range(100):
     liste_fourmis.append(Ant(i))
