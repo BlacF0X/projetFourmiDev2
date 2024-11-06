@@ -1,31 +1,39 @@
 import pygame as pg
-from scripts.classes import *
+import random
+import math
 from sys import exit
+from scripts.classes import *
 
 pg.init()
 
+# Configuration de l'écran
 screen = pg.display.set_mode((1500, 800))
-screen.fill((211,192,157))
-
-pg.display.set_caption('Ant sim')
+pg.display.set_caption('Ant Sim')
 clock = pg.time.Clock()
 
+# Liste des fourmis
 liste_fourmis = []
-counter = 0
-for i in range(500):
-    liste_fourmis.append(ant(i))
+for i in range(100):
+    liste_fourmis.append(Ant(i))
 
-
+# Boucle principale
 while True:
     for event in pg.event.get():
         if event.type == pg.QUIT:
             pg.quit()
             exit()
-    screen.fill((211,192,157))
+#lalala
+    # Remplir l'écran avec une légère transparence pour créer l'effet de traînée
+    overlay = pg.Surface((1500, 800), pg.SRCALPHA)
+    overlay.fill((211, 192, 157, 15))  # Couleur du fond avec faible opacité
+    screen.blit(overlay, (0, 0))
+
+    # Mettre à jour chaque fourmi
     for f in liste_fourmis:
-        if counter % 5 == 0:
-            f.move()
-        screen.blit(f.surface, f.rect)
+        f.move()
+        f.draw_trail(screen)  # Dessiner la traînée avant de dessiner la fourmi elle-même
+        screen.blit(f.image, f.rect)  # Dessiner la fourmi
+
+    # Mise à jour de l'affichage
     pg.display.update()
-    clock.tick(120)
-    counter += 1
+    clock.tick(60)  # Limiter la boucle à 60 FPS
