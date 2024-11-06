@@ -22,7 +22,7 @@ while True:
         if event.type == pg.QUIT:
             pg.quit()
             exit()
-#lalala
+
     # Remplir l'écran avec une légère transparence pour créer l'effet de traînée
     overlay = pg.Surface((1500, 800), pg.SRCALPHA)
     overlay.fill((211, 192, 157, 15))  # Couleur du fond avec faible opacité
