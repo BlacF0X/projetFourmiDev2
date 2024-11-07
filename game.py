@@ -14,7 +14,7 @@ clock = pg.time.Clock()
 # Liste des fourmis
 liste_fourmis = []
 liste_pheromone = []
-for i in range(100):
+for i in range(1):
     liste_fourmis.append(Ant(i))
 
 count = 0
@@ -24,7 +24,6 @@ while True:
         if event.type == pg.QUIT:
             pg.quit()
             exit()
-#lalala
     # Remplir l'écran avec une légère transparence pour créer l'effet de traînée
     overlay = pg.Surface((1500, 800))
     overlay.fill((211, 192, 157))  # Couleur du fond avec faible opacité
