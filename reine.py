@@ -13,8 +13,11 @@ class Reine:
 
     def create_princess(self):
         return Reine(
-            self.life + random.uniform(-self.gene_change_chance, self.gene_change_chance),
             self.speed + random.uniform(-self.gene_change_chance, self.gene_change_chance),
+            self.life + random.uniform(-self.gene_change_chance, self.gene_change_chance),
             self.reproduction_rate + (
                     random.uniform(-self.gene_change_chance, self.gene_change_chance) / 5),
             self.ratio + random.uniform(-self.gene_change_chance, self.gene_change_chance))
+
+    def __str__(self):
+        return f'vie : {self.life} || speed : {self.speed} || reproduction_rate : {self.reproduction_rate} || ratio : {self.ratio}'

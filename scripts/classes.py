@@ -98,8 +98,9 @@ class Colonie:
         self.larve_max = 50
 
     def new_col(self):
-        for i in range(self.nbr_fourmis - 1,self.nbr_fourmis // 2,-1):
+        for i in range(self.nbr_fourmis - 1,self.nbr_fourmis // 3,-1):
             self.fourmis.pop(i)
+        self.__stock_nourriture = self.__stock_nourriture // 10
 
     def action(self, ecran, liste_nourriture=[]):
         nourriture_mult = 1
@@ -118,6 +119,7 @@ class Colonie:
                     self.reine.ratio + random.uniform(-self.reine.gene_change_chance, self.reine.gene_change_chance),
                     self.reine.force + random.uniform(-self.reine.gene_change_chance, self.reine.gene_change_chance)))
         for f in self.fourmis:
+            print(f.life, 'life')
             pg.draw.circle(ecran, f.color, f.position, 1)
             if self.__stock_nourriture < 0:
                 self.__stock_nourriture = 0

@@ -18,7 +18,9 @@ clock = pg.time.Clock()
 
 liste_colonies = []
 liste_source = []
-liste_colonies.append(Colonie(Reine(),1500))
+nombre_de_fourmis = 1500
+quantite_nouriture = 15000
+liste_colonies.append(Colonie(Reine(),nombre_de_fourmis))
 
 # Boucle principale
 spawn = 1
@@ -32,14 +34,15 @@ while True:
         if colonie.nbr_fourmis <= 0:
             liste_colonies.remove(colonie)
 
-        col_circle = pg.draw.circle(screen,(99,47,26),colonie.position,colonie.nbr_fourmis//(colonie.nbr_fourmis/10))
+        col_circle = pg.draw.circle(screen,(99,47,26),colonie.position,colonie.nbr_fourmis//(nombre_de_fourmis//10))
         r = colonie.action(screen,liste_source)
         if r is not None:
-            liste_colonies.append(Colonie(r,colonie.nbr_fourmis//2,position=(random.randint(0,1500),random.randint(0,800))))
-            colonie.nbr_fourmis = colonie.nbr_fourmis // 2
+            print(r)
+            liste_colonies.append(Colonie(r,colonie.nbr_fourmis//3,position=(random.randint(0,1500),random.randint(0,800))))
+            colonie.nbr_fourmis = colonie.nbr_fourmis // 3
             colonie.new_col()
     for source in liste_source:
-        col_circle = pg.draw.circle(screen, (0,255,0), source.position, source.quantite_nourriture//(source.quantite_nourriture//10))
+        col_circle = pg.draw.circle(screen, (0,255,0), source.position, source.quantite_nourriture//(quantite_nouriture//10))
     source_spawn = random.random()
     if source_spawn >= 0.99 and len(liste_source) < 5:
         liste_source.append(Nourriture())
