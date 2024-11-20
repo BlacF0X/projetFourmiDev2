@@ -1,5 +1,3 @@
-from turtledemo.forest import randomize
-
 import pygame as pg
 import random
 import math
@@ -48,7 +46,7 @@ class Ouvriere:
         if self.porte:
             self.life -= (self.besoin_nourriture * self.force) / (self.force * 10)
         else:
-            self.life -= self.besoin_nourriture / 5
+            self.life -= self.besoin_nourriture /10
 
     def random_move(self):
         self.color = (0, 0, 0)
@@ -88,21 +86,27 @@ class Colonie:
         self.position = position
         self.__larves = 0
         self.reine = reine
+        self.radius = 10
         self.fourmis = []
+        self.angry = False
         for i in range(self.nbr_fourmis):
             self.fourmis.append(
                 Ouvriere(i, self.reine.speed, self.reine.life, pos=self.position, ratio_besoin=self.reine.ratio,
                          force=self.reine.force))
         self.larves = []
         self.pos_nourriture = []
+        self.pos_enemy = []
         self.larve_max = 50
+    def calculate_radius(self,nbr_fourmis):
+        self.radius = self.nbr_fourmis // (nbr_fourmis // 10)
+        return self.nbr_fourmis // (nbr_fourmis // 10)
 
     def new_col(self):
         for i in range(self.nbr_fourmis - 1,self.nbr_fourmis // 3,-1):
             self.fourmis.pop(i)
         self.__stock_nourriture = self.__stock_nourriture // 10
 
-    def action(self, ecran, liste_nourriture=[]):
+    def action(self, ecran, liste_nourriture=[],liste_col = []):
         nourriture_mult = 1
         if self.__larves > 0:
             nourriture_mult += 0.15
@@ -119,7 +123,6 @@ class Colonie:
                     self.reine.ratio + random.uniform(-self.reine.gene_change_chance, self.reine.gene_change_chance),
                     self.reine.force + random.uniform(-self.reine.gene_change_chance, self.reine.gene_change_chance)))
         for f in self.fourmis:
-            print(f.life, 'life')
             pg.draw.circle(ecran, f.color, f.position, 1)
             if self.__stock_nourriture < 0:
                 self.__stock_nourriture = 0
@@ -138,8 +141,23 @@ class Colonie:
                         depot_nourriture.quantite_nourriture -= f.force
                         f.destination = self.position
                         break
+            elif len(self.pos_enemy) < 0 and f.force > 25:
+                f.destination = random.choice(liste_col)
+                f.color = (255, 0, 255)
+                for col in liste_col:
+                    if abs(f.position[0] - col.position[0]) < (col.radius // 2) and abs(
+                            f.position[1] - col.position[1]) < (col.radius // 2):
+                        self.angry = True
+                        depot_nourriture.quantite_nourriture -= f.force
+                        f.destination = self.position
+                        break
             else:
                 if not f.porte:
+                    for col in liste_col:
+                        if abs(f.position[0] - col.position[0]) < (col.radius//2) and abs(
+                                f.position[1] - col.position[1]) < (col.radius//2):
+                            if col.position not in self.pos_enemy:
+                                self.pos_nourriture.append(col.position)
                     for depot_nourriture in liste_nourriture:
                         if abs(f.position[0] - depot_nourriture.position[0]) < 15 and abs(
                                 f.position[1] - depot_nourriture.position[1]) < 15:
@@ -155,19 +173,20 @@ class Colonie:
                             break
                     if f.life <= 20:
                         if abs(f.position[0] - self.position[0]) < 5 and abs(f.position[1] - self.position[1]) < 5:
-                            if self.__stock_nourriture > 0:
-                                f.life += f.besoin_nourriture*10
-                                self.__stock_nourriture -= f.besoin_nourriture*10
-                            else:
-                                f.life -= (f.besoin_nourriture / 5)
+                            while f.life <=75 and f.life >= 0:
+                                if self.__stock_nourriture > 0:
+                                    f.life += f.besoin_nourriture * 10
+                                    self.__stock_nourriture -= f.besoin_nourriture * 10
+                                else:
+                                    f.life -= (f.besoin_nourriture / 5)
                         else:
                             f.destination = self.position
                             f.move_to_dest()
                     elif abs(f.position[0] - self.position[0]) < 10 and abs(f.position[1] - self.position[1]) < 10:
                         dest = random.choice(self.pos_nourriture)
                         f.destination = dest
-                        f.life += f.besoin_nourriture
-                        self.__stock_nourriture -= f.besoin_nourriture
+                        f.life += f.besoin_nourriture*10
+                        self.__stock_nourriture -= f.besoin_nourriture*10
                         f.color = (0, 0, 255)
                         f.move_to_dest()
                     elif f.destination not in self.pos_nourriture:
