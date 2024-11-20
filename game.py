@@ -2,6 +2,8 @@ import pygame as pg
 import random
 import math
 from sys import exit
+
+from projetFourmiDev2.reine import Reine
 from scripts.classes import *
 
 pg.init()
@@ -16,7 +18,7 @@ clock = pg.time.Clock()
 
 liste_colonies = []
 liste_source = []
-liste_colonies.append(Colonie(Reine(),500))
+liste_colonies.append(Colonie(Reine(),1500))
 
 # Boucle principale
 spawn = 1
@@ -29,18 +31,18 @@ while True:
     for colonie in liste_colonies:
         if colonie.nbr_fourmis <= 0:
             liste_colonies.remove(colonie)
-            pass
-        col_circle = pg.draw.circle(screen,(99,47,26),colonie.position,colonie.nbr_fourmis // 50)
+
+        col_circle = pg.draw.circle(screen,(99,47,26),colonie.position,colonie.nbr_fourmis//(colonie.nbr_fourmis/10))
         r = colonie.action(screen,liste_source)
-        if r != None:
-            liste_colonies.append(Colonie(r,colonie.nbr_fourmis//2))
+        if r is not None:
+            liste_colonies.append(Colonie(r,colonie.nbr_fourmis//2,position=(random.randint(0,1500),random.randint(0,800))))
             colonie.nbr_fourmis = colonie.nbr_fourmis // 2
-            colonie.remove()
+            colonie.new_col()
     for source in liste_source:
-        col_circle = pg.draw.circle(screen, (0,255,0), source.position, source.quantite_nourriture//100)
+        col_circle = pg.draw.circle(screen, (0,255,0), source.position, source.quantite_nourriture//(source.quantite_nourriture//10))
     source_spawn = random.random()
     if source_spawn >= 0.99 and len(liste_source) < 5:
-        liste_source.append(Nourriture(1500))
+        liste_source.append(Nourriture())
         spawn = 1
     spawn += 1
 
