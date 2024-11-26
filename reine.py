@@ -2,7 +2,7 @@ import random
 
 
 class Reine:
-    def __init__(self, speed=1.0, vie=100.0, rep_rate=0.08, ratio_besoin=0.1, force=20.0):
+    def __init__(self, speed=2.0, vie=100.0, rep_rate=0.7, ratio_besoin=0.1, force=22.0):
         self.life = vie
         self.reproduction_rate = rep_rate
         self.speed = speed

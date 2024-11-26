@@ -3,7 +3,6 @@ import random
 import math
 from sys import exit
 
-from projetFourmiDev2.reine import Reine
 from scripts.classes import *
 
 pg.init()
@@ -19,8 +18,9 @@ clock = pg.time.Clock()
 liste_colonies = []
 liste_source = []
 nombre_de_fourmis = 500
-quantite_nouriture = 1500
-liste_colonies.append(Colonie(Reine(),nombre_de_fourmis))
+quantite_nouriture = 2000
+nbr_colonie = 0
+liste_colonies.append(Colonie(Reine(),nombre_de_fourmis,numero=0))
 
 # Boucle principale
 spawn = 1
@@ -36,17 +36,18 @@ while True:
         if colonie.nbr_fourmis//(nombre_de_fourmis//10) < 1:
             col_circle = pg.draw.circle(screen,(99,47,26),colonie.position,1)
         else:
-            col_circle = pg.draw.circle(screen, (99, 47, 26), colonie.calculate_radius(nombre_de_fourmis))
+            col_circle = pg.draw.circle(screen, (99, 47, 26),colonie.position,colonie.calculate_radius(nombre_de_fourmis))
         r = colonie.action(screen,liste_source)
         if r is not None :
+            nbr_colonie += 1
             print(r)
-            liste_colonies.append(Colonie(r,colonie.nbr_fourmis//3,position=(random.randint(0,1500),random.randint(0,800))))
-            colonie.nbr_fourmis = colonie.nbr_fourmis // 3
+            liste_colonies.append(Colonie(r,colonie.nbr_fourmis//3,position=(random.randint(0,1500),random.randint(0,800)),numero=nbr_colonie))
+
             colonie.new_col()
     for source in liste_source:
         col_circle = pg.draw.circle(screen, (0,255,0), source.position, source.quantite_nourriture//(quantite_nouriture//10))
     source_spawn = random.random()
-    if source_spawn >= 0.99 and len(liste_source) < 5:
+    if source_spawn >= 0.99 and len(liste_source) < 7:
         liste_source.append(Nourriture(quantite_nouriture))
         spawn = 1
     spawn += 1
