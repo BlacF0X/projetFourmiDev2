@@ -2,64 +2,246 @@ import pygame as pg
 import random
 import math
 
+from projetFourmiDev2.reine import Reine
 
-# Classe Ant
-class Ant:
-    def __init__(self, numero, ant_type="test"):
-        self.__num = numero
-        self.__position = [750, 400]  # Position de départ
-        self.__rotation = random.uniform(0, 360)  # Angle de rotation initial en degrés
-        self.__type = ant_type
-        self.__speed = 1.5  # Vitesse légèrement réduite pour un déplacement fluide
-        self.image = pg.image.load('scripts/images/ants.png').convert_alpha()
-        self.original_image = self.image  # Conserver l'image d'origine pour rotation
-        self.rect = self.image.get_rect(center=self.__position)
 
-        # Liste des positions pour la traînée
-        self.trail = []
-        self.max_trail_length = 20  # Longueur maximale de la traînée
+class Nourriture:
+    def __init__(self, quantite=3000):
+        self.quantite_nourriture = quantite
+        self.position = (random.randint(0, 1500), random.randint(0, 700))
 
-    def move(self):
-        # Changement d'angle progressif
-        if random.random() < 0.1:
-            new_rot = random.uniform(-25, 25)
-            self.__rotation += new_rot
+
+class Ouvriere:
+    def __init__(self, nbr, speed=1.0, vie=100.0, pos=[0, 0], ratio_besoin=0.1, force=28.0):
+        self.life = vie
+        self.speed = speed
+        self.ratio_besoin = ratio_besoin
+        self.position = pos
+        self.force = force
+        self.color = (0, 0, 0)
+        self.besoin_nourriture = speed * ratio_besoin
+        self.destination = pos
+        self.porte = False
+        self.numero = nbr
+        self.direction = random.randint(0, 360)
+        self.angers = False
+
+    def move_to_dest(self):
+        dep_dir_x = 0
+        dep_dir_y = 0
+        if abs(self.destination[0] - self.position[0]) != 0:
+            dep_dir_x = (self.destination[0] - self.position[0]) / abs(self.destination[0] - self.position[0])
+        if abs(self.destination[1] - self.position[1]) != 0:
+            dep_dir_y = (self.destination[1] - self.position[1]) / abs(self.destination[1] - self.position[1])
+        if abs(self.destination[0] / self.position[0]) <= 2:
+            dep_dist_x = self.speed + 0.1
         else:
-            self.__rotation += random.uniform(-5, 5)
+            dep_dist_x = abs(self.destination[0] / self.position[0]) * self.speed
+        if abs(self.destination[1] / self.position[1]) <= 2:
+            dep_dist_y = self.speed + 0.1
+        else:
+            dep_dist_y = abs(self.destination[1] / self.position[1]) * self.speed
+        self.position = [self.position[0] + (dep_dir_x * dep_dist_x), self.position[1] + (dep_dir_y * dep_dist_y)]
+        if self.porte:
+            self.life -= (self.besoin_nourriture * self.force) / (self.force * 10)
+        else:
+            self.life -= self.besoin_nourriture /10
 
-        # Mise à jour de l'image en fonction de la rotation
-        self.image = pg.transform.rotate(self.original_image, -self.__rotation)
-        self.rect = self.image.get_rect(center=self.__position)
+    def random_move(self):
+        self.color = (0, 0, 0)
+        f_deplacement = [random.randint(1, 15), random.randint(1, 15)]
+        self.direction += random.randint(-15, 15)
+        if self.direction >= 360:
+            self.direction -= 360
+        elif self.direction < 0:
+            self.direction += 360
+        cadran = self.direction // 90
+        dic = [(1, -1), (1, 1), (-1, 1), (-1, -1)]
+        self.destination = [self.position[0] + (f_deplacement[0] * self.speed * dic[cadran][0]),
+                            self.position[1] + (f_deplacement[1] * self.speed * dic[cadran][1])]
+        self.move_to_dest()
 
-        # Calcul des nouvelles coordonnées de mouvement
-        rad_rotation = math.radians(self.__rotation)
-        mvmt_X = math.cos(rad_rotation) * self.__speed
-        mvmt_Y = math.sin(rad_rotation) * self.__speed
-        self.__position[0] += mvmt_X
-        self.__position[1] += mvmt_Y
 
-        # Ajouter la position actuelle à la traînée
-        self.trail.append(tuple(self.__position))  # Ajouter en tant que tuple pour éviter les modifications
-        if len(self.trail) > self.max_trail_length:
-            self.trail.pop(0)  # Supprimer la plus ancienne position si la traînée dépasse la longueur max
 
-        # Limiter les fourmis dans les limites de l'écran
-        if self.__position[0] < 0 or self.__position[0] > 1500:
-            self.__rotation = 180 - self.__rotation
-        if self.__position[1] < 0 or self.__position[1] > 800:
-            self.__rotation = -self.__rotation
 
-        # Mettre à jour la position du rectangle pour blit
-        self.rect.center = self.__position
 
-    def draw_trail(self, screen):
-        # Couleur de base de la traînée
-        base_color = (255, 0, 0)  # Rouge par exemple
+class Larve:
+    def __init__(self, speed, life, ratio, force, tm_to_spawn=100, reine=False, ):
+        self.time_to_spawn = tm_to_spawn
+        if reine:
+            self.role = 'reine'
+        else:
+            self.role = 'ouvriere'
+        self.speed = speed
+        self.life = life
+        self.ratio = ratio
+        self.force = force
 
-        # Dessiner chaque position dans la traînée avec une opacité décroissante
-        for i, pos in enumerate(self.trail):
-            alpha = 255 * (i / len(self.trail))  # Opacité décroissante
-            color = (*base_color[:3], int(alpha))  # Couleur avec transparence
-            trail_surface = pg.Surface((5, 5), pg.SRCALPHA)  # Surface avec canal alpha
-            trail_surface.fill(color)
-            screen.blit(trail_surface, pos)
+
+class Colonie:
+    def __init__(self, reine: Reine, nbr_ants=0, position=(750, 400),numero = 0):
+        self.number = numero
+        self.nbr_fourmis = nbr_ants
+        self.__stock_nourriture = 0
+        self.position = position
+        self.__larves = 0
+        self.reine = reine
+        self.radius = 10
+        self.fourmis = []
+        self.angry = False
+        for i in range(self.nbr_fourmis):
+            self.fourmis.append(
+                Ouvriere(i, self.reine.speed, self.reine.life, self.position, ratio_besoin=self.reine.ratio,
+                         force=self.reine.force))
+        self.larves = []
+        self.pos_nourriture = []
+        self.pos_enemy = []
+        self.larve_max = 50
+
+
+    def calculate_radius(self,nbr_fourmis):
+        self.radius = self.nbr_fourmis // (nbr_fourmis // 10)
+        return self.nbr_fourmis // (nbr_fourmis // 10)
+
+    def new_col(self):
+        for i in range(self.nbr_fourmis - 1,self.nbr_fourmis // 3,-1):
+            self.fourmis.pop(i)
+        self.nbr_fourmis = len(self.fourmis)
+        self.__stock_nourriture = self.__stock_nourriture // 10
+
+    def remove_one(self):
+        self.fourmis.pop(self.nbr_fourmis - 1)
+        self.nbr_fourmis -= 1
+
+    def action(self, ecran, liste_nourriture=[],liste_col = []):
+        nourriture_mult = 1
+        if self.__larves > 0:
+            nourriture_mult += 0.15
+        if self.__stock_nourriture > self.nbr_fourmis / 5:
+            if self.nbr_fourmis > 500:
+                princesse_chance = self.compute_princess_proba()
+            else:
+                princesse_chance = 0
+            self.__stock_nourriture -= self.reine.reproduction_rate * nourriture_mult
+            if princesse_chance > 1:
+                print('new_reine')
+                return self.reine.create_princess()
+            elif len(self.larves) < self.larve_max:
+                self.larves.append(Larve(
+                    self.reine.speed + random.uniform(-self.reine.gene_change_chance, self.reine.gene_change_chance),
+                    self.reine.life + random.uniform(-self.reine.gene_change_chance, self.reine.gene_change_chance),
+                    self.reine.ratio + random.uniform(-self.reine.gene_change_chance, self.reine.gene_change_chance),
+                    self.reine.force + random.uniform(-self.reine.gene_change_chance, self.reine.gene_change_chance)))
+        for f in self.fourmis:
+            pg.draw.circle(ecran, f.color, f.position, 1)
+            if self.__stock_nourriture < 0:
+                self.__stock_nourriture = 0
+            if len(self.pos_nourriture) == 0:
+                f.random_move()
+                for depot_nourriture in liste_nourriture:
+                    if abs(f.position[0] - depot_nourriture.position[0]) < 15 and abs(
+                            f.position[1] - depot_nourriture.position[1]) < 15:
+                        if depot_nourriture.position not in self.pos_nourriture:
+                            self.pos_nourriture.append(depot_nourriture.position)
+                        f.porte = True
+                        f.color = (255, 0, 0)
+                        depot_nourriture.quantite_nourriture -= f.force
+                        f.destination = self.position
+                        break
+            else:
+                if len(self.pos_enemy) == 0:
+                    f.angers = False
+                if not f.porte:
+                    for col in liste_col:
+                        if abs(f.position[0] - col.position[0]) < (col.radius//2) and abs(
+                                f.position[1] - col.position[1]) < (col.radius//2) and col != self:
+                            if col.position not in self.pos_enemy:
+                                self.pos_enemy.append(col.position)
+                            pass
+                            if col.reine.force >= self.reine.force:
+                                self.remove_one()
+                            elif col.reine.force <= self.reine.force:
+                                col.remove_one()
+                            else:
+                                f.life -= col.reine.force
+                            if col.nbr_fourmis <=0 :
+                                self.pos_enemy.remove(col.position)
+                                liste_col.remove(col)
+                    for depot_nourriture in liste_nourriture:
+                        if abs(f.position[0] - depot_nourriture.position[0]) < 15 and abs(
+                                f.position[1] - depot_nourriture.position[1]) < 15:
+                            if depot_nourriture.position not in self.pos_nourriture:
+                                self.pos_nourriture.append(depot_nourriture.position)
+                            f.porte = True
+                            f.color = (255, 0, 0)
+                            depot_nourriture.quantite_nourriture -= f.force
+                            f.destination = self.position
+                            if depot_nourriture.quantite_nourriture <= 0:
+                                liste_nourriture.remove(depot_nourriture)
+                                self.pos_nourriture.remove(depot_nourriture.position)
+                            break
+                    if f.life <= 20:
+                        if abs(f.position[0] - self.position[0]) < 5 and abs(f.position[1] - self.position[1]) < 5:
+                            while f.life <=75 and f.life >= 0:
+                                if self.__stock_nourriture > 0:
+                                    f.life += f.besoin_nourriture * 10
+                                    self.__stock_nourriture -= f.besoin_nourriture * 10
+                                else:
+                                    f.life -= (f.besoin_nourriture / 5)
+                        else:
+                            f.destination = self.position
+                            f.move_to_dest()
+                    elif len(self.pos_enemy) > 0 and abs(f.position[0] - self.position[0]) < 10 and abs(f.position[1] - self.position[1]) < 10:
+                        dest = random.choice(self.pos_enemy)
+                        f.destination = dest
+                        f.angers = True
+                        f.life += f.besoin_nourriture * 10
+                        self.__stock_nourriture -= f.besoin_nourriture * 10
+                        f.color = (255, 0, 255)
+                        f.move_to_dest()
+                    elif f.angers:
+                        f.color = (255,0,255)
+                        f.move_to_dest()
+                    elif abs(f.position[0] - self.position[0]) < 10 and abs(f.position[1] - self.position[1]) < 10:
+                        dest = random.choice(self.pos_nourriture)
+                        f.destination = dest
+                        f.life += f.besoin_nourriture*10
+                        self.__stock_nourriture -= f.besoin_nourriture*10
+                        f.color = (0, 0, 255)
+                        f.move_to_dest()
+                    elif f.destination not in self.pos_nourriture:
+                        f.random_move()
+                    else:
+                        f.move_to_dest()
+                elif f.porte:
+                    f.destination = self.position
+                    f.move_to_dest()
+                    f.color = (255, 0, 0)
+                    if abs(f.position[0] - self.position[0]) <= 10 and abs(f.position[1] - self.position[1]) <= 10:
+                        f.porte = False
+                        f.color = (0, 0, 0)
+                        self.__stock_nourriture += f.force
+                        f.life += f.besoin_nourriture
+                        self.__stock_nourriture -= f.besoin_nourriture
+            if f.life <= 0:
+                self.fourmis.remove(f)
+                self.nbr_fourmis = len(self.fourmis)
+        for l in self.larves:
+            l.time_to_spawn -= 1
+            if l.time_to_spawn == 0:
+                self.larves.remove(l)
+                self.fourmis.append(
+                    Ouvriere(self.nbr_fourmis + 1, l.speed, l.life, pos=self.position, ratio_besoin=l.ratio))
+                self.nbr_fourmis = len(self.fourmis)
+        print()
+        print('nombre de fourmis: ' + str(self.nbr_fourmis))
+        print('stock de nourriture: ' + str(self.__stock_nourriture))
+        print('nombre de larves: ' + str(len(self.larves)))
+        return None
+
+    def compute_princess_proba(self):
+        """
+        compute change of getting a princess
+        :return:
+        """
+        return self.reine.reproduction_rate *(self.__stock_nourriture / self.nbr_fourmis)
