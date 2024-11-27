@@ -42,7 +42,6 @@ while True:
             nbr_colonie += 1
             print(r)
             liste_colonies.append(Colonie(r,colonie.nbr_fourmis//3,position=(random.randint(0,1500),random.randint(0,800)),numero=nbr_colonie))
-
             colonie.new_col()
     for source in liste_source:
         col_circle = pg.draw.circle(screen, (0,255,0), source.position, source.quantite_nourriture//(quantite_nouriture//10))

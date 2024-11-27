@@ -114,6 +114,7 @@ class Colonie:
         self.nbr_fourmis -= 1
 
     def action(self, ecran, liste_nourriture=[],liste_col = []):
+
         nourriture_mult = 1
         if self.__larves > 0:
             nourriture_mult += 0.15
@@ -172,13 +173,12 @@ class Colonie:
                                 f.position[1] - depot_nourriture.position[1]) < 15:
                             if depot_nourriture.position not in self.pos_nourriture:
                                 self.pos_nourriture.append(depot_nourriture.position)
+                            if depot_nourriture.quantite_nourriture <= 0:
+                                self.pos_nourriture.remove(depot_nourriture.position)
                             f.porte = True
                             f.color = (255, 0, 0)
                             depot_nourriture.quantite_nourriture -= f.force
                             f.destination = self.position
-                            if depot_nourriture.quantite_nourriture <= 0:
-                                liste_nourriture.remove(depot_nourriture)
-                                self.pos_nourriture.remove(depot_nourriture.position)
                             break
                     if f.life <= 20:
                         if abs(f.position[0] - self.position[0]) < 5 and abs(f.position[1] - self.position[1]) < 5:
@@ -233,7 +233,7 @@ class Colonie:
                 self.fourmis.append(
                     Ouvriere(self.nbr_fourmis + 1, l.speed, l.life, pos=self.position, ratio_besoin=l.ratio))
                 self.nbr_fourmis = len(self.fourmis)
-        print()
+        print(self.number)
         print('nombre de fourmis: ' + str(self.nbr_fourmis))
         print('stock de nourriture: ' + str(self.__stock_nourriture))
         print('nombre de larves: ' + str(len(self.larves)))
