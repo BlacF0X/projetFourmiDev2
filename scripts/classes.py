@@ -2,8 +2,7 @@ import pygame as pg
 import random
 import math
 
-from projetFourmiDev2.reine import Reine
-
+from reine import Reine
 
 class Nourriture:
     def __init__(self, quantite=3000):
@@ -139,11 +138,13 @@ class Colonie:
                 self.__stock_nourriture = 0
             if len(self.pos_nourriture) == 0:
                 f.random_move()
-                for depot_nourriture in liste_nourriture:
+                for depot_nour in liste_nourriture:
+                    depot_nourriture = depot_nour[0]
                     if abs(f.position[0] - depot_nourriture.position[0]) < 15 and abs(
                             f.position[1] - depot_nourriture.position[1]) < 15:
                         if depot_nourriture.position not in self.pos_nourriture:
                             self.pos_nourriture.append(depot_nourriture.position)
+                            depot_nour[1] += 1
                         f.porte = True
                         f.color = (255, 0, 0)
                         depot_nourriture.quantite_nourriture -= f.force
@@ -168,13 +169,18 @@ class Colonie:
                             if col.nbr_fourmis <=0 :
                                 self.pos_enemy.remove(col.position)
                                 liste_col.remove(col)
-                    for depot_nourriture in liste_nourriture:
+                    for depot_nour in liste_nourriture:
+                        depot_nourriture = depot_nour[0]
                         if abs(f.position[0] - depot_nourriture.position[0]) < 15 and abs(
                                 f.position[1] - depot_nourriture.position[1]) < 15:
                             if depot_nourriture.position not in self.pos_nourriture:
                                 self.pos_nourriture.append(depot_nourriture.position)
+                                depot_nour[1] += 1
                             if depot_nourriture.quantite_nourriture <= 0:
                                 self.pos_nourriture.remove(depot_nourriture.position)
+                                depot_nour[1] -= 1
+                                if depot_nour[1] == 0:
+                                    liste_nourriture.remove(depot_nour)
                             f.porte = True
                             f.color = (255, 0, 0)
                             depot_nourriture.quantite_nourriture -= f.force
@@ -233,7 +239,7 @@ class Colonie:
                 self.fourmis.append(
                     Ouvriere(self.nbr_fourmis + 1, l.speed, l.life, pos=self.position, ratio_besoin=l.ratio))
                 self.nbr_fourmis = len(self.fourmis)
-        print(self.number)
+        print(liste_nourriture)
         print('nombre de fourmis: ' + str(self.nbr_fourmis))
         print('stock de nourriture: ' + str(self.__stock_nourriture))
         print('nombre de larves: ' + str(len(self.larves)))
@@ -245,3 +251,17 @@ class Colonie:
         :return:
         """
         return self.reine.reproduction_rate *(self.__stock_nourriture / self.nbr_fourmis)
+
+    def save_data(self):
+        filename = f'scripts/data/data_colonie_{self.number}.txt'
+
+        """
+        Sauvegarde les données de la colonie dans un fichier texte.
+        """
+        with open(filename, "a") as file:
+            file.write(f"Colonie {self.number} :\n")
+            file.write(f"  Nombre de fourmis : {self.nbr_fourmis}\n")
+            file.write(f"  Stock de nourriture : {self.__stock_nourriture}\n")
+            file.write("\n")
+
+
