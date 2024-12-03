@@ -27,9 +27,9 @@ liste_colonies.append(Colonie(Reine(), nombre_de_fourmis, numero=0))
 
 colonie_selectionnee = None
 
-
-
 spawn = 1
+
+
 while True:
     mouse_pos = pg.mouse.get_pos()
     colonie_hover = None

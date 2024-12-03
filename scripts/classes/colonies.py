@@ -7,17 +7,6 @@ from scripts.classes.reine import Reine
 from scripts.classes.ouvriere import Ouvriere
 from scripts.classes.larve import Larve
 
-
-
-
-
-
-
-
-
-
-
-
 class Colonie:
     def __init__(self, reine: Reine, nbr_ants=0, position=(750, 400),numero = 0):
         self.number = numero
@@ -120,52 +109,13 @@ class Colonie:
                                 liste_nourriture.remove(depot_nourriture)
                                 self.pos_nourriture.remove(depot_nourriture.position)
                             break
-                    if f.life <= 20:
-                        if abs(f.position[0] - self.position[0]) < 5 and abs(f.position[1] - self.position[1]) < 5:
-                            while f.life <=75 and f.life >= 0:
-                                if self.__stock_nourriture > 0:
-                                    f.life += f.besoin_nourriture * 10
-                                    self.__stock_nourriture -= f.besoin_nourriture * 10
-                                else:
-                                    f.life -= (f.besoin_nourriture / 5)
-                        else:
-                            f.destination = self.position
-                            f.move_to_dest()
-                    elif len(self.pos_enemy) > 0 and abs(f.position[0] - self.position[0]) < 10 and abs(f.position[1] - self.position[1]) < 10:
-                        dest = random.choice(self.pos_enemy)
-                        f.destination = dest
-                        f.angers = True
-                        f.life += f.besoin_nourriture * 10
-                        self.__stock_nourriture -= f.besoin_nourriture * 10
-                        f.color = (255, 0, 255)
-                        f.move_to_dest()
-                    elif f.angers:
-                        f.color = (255,0,255)
-                        f.move_to_dest()
-                    elif abs(f.position[0] - self.position[0]) < 10 and abs(f.position[1] - self.position[1]) < 10:
-                        dest = random.choice(self.pos_nourriture)
-                        f.destination = dest
-                        f.life += f.besoin_nourriture*10
-                        self.__stock_nourriture -= f.besoin_nourriture*10
-                        f.color = (0, 0, 255)
-                        f.move_to_dest()
-                    elif f.destination not in self.pos_nourriture:
-                        f.random_move()
-                    else:
-                        f.move_to_dest()
+                    self.f_not_porte_action(f)
                 elif f.porte:
-                    f.destination = self.position
-                    f.move_to_dest()
-                    f.color = (255, 0, 0)
-                    if abs(f.position[0] - self.position[0]) <= 10 and abs(f.position[1] - self.position[1]) <= 10:
-                        f.porte = False
-                        f.color = (0, 0, 0)
-                        self.__stock_nourriture += f.force
-                        f.life += f.besoin_nourriture
-                        self.__stock_nourriture -= f.besoin_nourriture
+                    self.f_porte_action(f)
             if f.life <= 0:
                 self.fourmis.remove(f)
                 self.nbr_fourmis = len(self.fourmis)
+
         for l in self.larves:
             l.time_to_spawn -= 1
             if l.time_to_spawn == 0:
@@ -185,3 +135,49 @@ class Colonie:
         :return:
         """
         return self.reine.reproduction_rate *(self.__stock_nourriture / self.nbr_fourmis)
+
+    def f_porte_action(self,fourmi):
+        fourmi.destination = self.position
+        fourmi.move_to_dest()
+        fourmi.color = (255, 0, 0)
+        if abs(fourmi.position[0] - self.position[0]) <= 10 and abs(fourmi.position[1] - self.position[1]) <= 10:
+            fourmi.porte = False
+            fourmi.color = (0, 0, 0)
+            self.__stock_nourriture += fourmi.force
+            fourmi.life += fourmi.besoin_nourriture
+            self.__stock_nourriture -= fourmi.besoin_nourriture
+
+    def f_not_porte_action(self,fourmi):
+        if fourmi.life <= 20:
+            if fourmi.check_proximity(self,5):
+                while fourmi.life <= 75 and fourmi.life >= 0:
+                    if self.__stock_nourriture > 0:
+                        fourmi.life += fourmi.besoin_nourriture * 10
+                        self.__stock_nourriture -= fourmi.besoin_nourriture * 10
+                    else:
+                        fourmi.life -= (fourmi.besoin_nourriture / 5)
+            else:
+                fourmi.destination = self.position
+                fourmi.move_to_dest()
+        elif len(self.pos_enemy) > 0 and fourmi.check_proximity(self):
+            dest = random.choice(self.pos_enemy)
+            fourmi.destination = dest
+            fourmi.angers = True
+            fourmi.life += fourmi.besoin_nourriture * 10
+            self.__stock_nourriture -= fourmi.besoin_nourriture * 10
+            fourmi.color = (255, 0, 255)
+            fourmi.move_to_dest()
+        elif fourmi.angers:
+            fourmi.color = (255, 0, 255)
+            fourmi.move_to_dest()
+        elif fourmi.check_proximity(self):
+            dest = random.choice(self.pos_nourriture)
+            fourmi.destination = dest
+            fourmi.life += fourmi.besoin_nourriture * 10
+            self.__stock_nourriture -= fourmi.besoin_nourriture * 10
+            fourmi.color = (0, 0, 255)
+            fourmi.move_to_dest()
+        elif fourmi.destination not in self.pos_nourriture:
+            fourmi.random_move()
+        else:
+            fourmi.move_to_dest()

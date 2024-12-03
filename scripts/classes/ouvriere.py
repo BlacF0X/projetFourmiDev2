@@ -49,3 +49,6 @@ class Ouvriere:
         self.destination = [self.position[0] + (f_deplacement[0] * self.speed * dic[cadran][0]),
                             self.position[1] + (f_deplacement[1] * self.speed * dic[cadran][1])]
         self.move_to_dest()
+
+    def check_proximity(self,cible,distance = 10):
+        return abs(self.position[0] - cible.position[0]) < distance  and abs(self.position[1] - cible.position[1]) < distance
