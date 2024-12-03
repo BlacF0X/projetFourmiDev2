@@ -1,6 +1,7 @@
 import pygame as pg
 import math
 import random
+import os
 
 # Importation de chaque classe
 
@@ -30,6 +31,23 @@ colonie_selectionnee = None
 spawn = 1
 
 
+def save_colonies(liste_colonies):
+    """
+    Sauvegarde les données de toutes les colonies dans un fichier texte en écrasant les anciennes données.
+    """
+
+    for col in liste_colonies:
+        colonie = col[0]
+        filename = f'data/data_col_{colonie.number}.txt'
+        with open(filename, "a") as file:  # Mode "w" pour écraser
+            file.write(f"Colonie {colonie.number} :\n")
+            file.write(f"  Nombre de fourmis : {colonie.nbr_fourmis}\n")
+            file.write(f"  Stock de nourriture : {colonie._Colonie__stock_nourriture}\n")
+            file.write("\n")
+
+
+for file in os.listdir('data'):
+    os.remove(os.path.join('data', file))
 while True:
     mouse_pos = pg.mouse.get_pos()
     colonie_hover = None
@@ -41,7 +59,8 @@ while True:
         elif event.type == pg.MOUSEBUTTONDOWN:
             mouse_pos = pg.mouse.get_pos()
             colonie_selectionnee = None
-            for colonie in liste_colonies:
+            for col in liste_colonies:
+                colonie = col[0]
                 distance = math.sqrt((mouse_pos[0] - colonie.position[0]) ** 2 +
                                      (mouse_pos[1] - colonie.position[1]) ** 2)
                 if distance <= colonie.calculate_radius(nombre_de_fourmis):
@@ -70,7 +89,7 @@ while True:
             pg.draw.circle(screen, (99, 47, 26), colonie.position, colonie.calculate_radius(nombre_de_fourmis))
 
         r = colonie.action(screen, liste_source)
-        if r is not None:
+        if r is not None and len(liste_colonies) <= 7:
             nbr_colonie += 1
             print(r)
             liste_colonies.append([
@@ -112,6 +131,8 @@ while True:
         screen.blit(text, (rect_x + 10, rect_y + 50))
 
 
+
+    save_colonies(liste_colonies)
     pg.display.update()
     clock.tick(60)
 

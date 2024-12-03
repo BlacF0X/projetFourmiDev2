@@ -106,8 +106,9 @@ class Colonie:
     def enemy_col_action(self,liste_colo,fourmi):
         for colonie in liste_colo:
             col = colonie[0]
-            if fourmi.check_proximity(col,(col.radius // 2)) and col != self:
+            if fourmi.check_proximity(col,col.radius) and col != self:
                 if col.position not in self.pos_enemy:
+                    print('added')
                     self.pos_enemy.append(col.position)
                     colonie[1] += 1
                 if col.reine.force >= self.reine.force:
