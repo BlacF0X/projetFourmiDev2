@@ -1,83 +1,11 @@
 import pygame as pg
 import random
-import math
-from GitHub.projetFourmiDev2.reine import Reine
 
+# Importation des classes utilisées
 
-
-
-class Nourriture:
-    def __init__(self, quantite=3000):
-        self.quantite_nourriture = quantite
-        self.position = (random.randint(0, 1500), random.randint(0, 700))
-
-
-class Ouvriere:
-    def __init__(self, nbr, speed=1.0, vie=100.0, pos=[0, 0], ratio_besoin=0.1, force=28.0):
-        self.life = vie
-        self.speed = speed
-        self.ratio_besoin = ratio_besoin
-        self.position = pos
-        self.force = force
-        self.color = (0, 0, 0)
-        self.besoin_nourriture = speed * ratio_besoin
-        self.destination = pos
-        self.porte = False
-        self.numero = nbr
-        self.direction = random.randint(0, 360)
-        self.angers = False
-
-    def move_to_dest(self):
-        dep_dir_x = 0
-        dep_dir_y = 0
-        if abs(self.destination[0] - self.position[0]) != 0:
-            dep_dir_x = (self.destination[0] - self.position[0]) / abs(self.destination[0] - self.position[0])
-        if abs(self.destination[1] - self.position[1]) != 0:
-            dep_dir_y = (self.destination[1] - self.position[1]) / abs(self.destination[1] - self.position[1])
-        if abs(self.destination[0] / self.position[0]) <= 2:
-            dep_dist_x = self.speed + 0.1
-        else:
-            dep_dist_x = abs(self.destination[0] / self.position[0]) * self.speed
-        if abs(self.destination[1] / self.position[1]) <= 2:
-            dep_dist_y = self.speed + 0.1
-        else:
-            dep_dist_y = abs(self.destination[1] / self.position[1]) * self.speed
-        self.position = [self.position[0] + (dep_dir_x * dep_dist_x), self.position[1] + (dep_dir_y * dep_dist_y)]
-        if self.porte:
-            self.life -= (self.besoin_nourriture * self.force) / (self.force * 10)
-        else:
-            self.life -= self.besoin_nourriture /10
-
-    def random_move(self):
-        self.color = (0, 0, 0)
-        f_deplacement = [random.randint(1, 15), random.randint(1, 15)]
-        self.direction += random.randint(-15, 15)
-        if self.direction >= 360:
-            self.direction -= 360
-        elif self.direction < 0:
-            self.direction += 360
-        cadran = self.direction // 90
-        dic = [(1, -1), (1, 1), (-1, 1), (-1, -1)]
-        self.destination = [self.position[0] + (f_deplacement[0] * self.speed * dic[cadran][0]),
-                            self.position[1] + (f_deplacement[1] * self.speed * dic[cadran][1])]
-        self.move_to_dest()
-
-
-
-
-
-class Larve:
-    def __init__(self, speed, life, ratio, force, tm_to_spawn=100, reine=False, ):
-        self.time_to_spawn = tm_to_spawn
-        if reine:
-            self.role = 'reine'
-        else:
-            self.role = 'ouvriere'
-        self.speed = speed
-        self.life = life
-        self.ratio = ratio
-        self.force = force
-
+from scripts.classes.reine import Reine
+from scripts.classes.ouvriere import Ouvriere
+from scripts.classes.larve import Larve
 
 class Colonie:
     def __init__(self, reine: Reine, nbr_ants=0, position=(750, 400),numero = 0):
@@ -101,16 +29,47 @@ class Colonie:
 
 
     def calculate_radius(self,nbr_fourmis):
+
+        """
+        Calcule le rayon de la colonie et le met à jour. Basé sur la quantité de fourmis
+
+        Pré : nbr_fourmis doit être un int et strictement positif
+
+        Post : retourne le rayon calculé
+
+        """
         self.radius = self.nbr_fourmis // (nbr_fourmis // 10)
         return self.nbr_fourmis // (nbr_fourmis // 10)
 
     def new_col(self):
+
+        """
+        Divise le nombre de fourmis et la nourriture restante. Réduit donc la taille de la colonie.
+
+        Pré : self.nbr_fourmis doit être un int strictement positif
+              self.__stock_nourriture = doit être non nul
+
+        Post : le nombre de fourmis est mis à jour
+               le stock de nourriture est réduit de 90%
+
+
+        """
         for i in range(self.nbr_fourmis - 1,self.nbr_fourmis // 3,-1):
             self.fourmis.pop(i)
         self.nbr_fourmis = len(self.fourmis)
         self.__stock_nourriture = self.__stock_nourriture // 10
 
     def remove_one(self):
+
+        """
+        Supprime une fourmi de la colonie
+
+        Pre : la liste de fourmis doit contenir au moins une fourmi
+              nbr_fourmis doit être strictement positif
+
+        Post : Supprime la dernière fourmi de la liste des fourmis
+
+        """
         self.fourmis.pop(self.nbr_fourmis - 1)
         self.nbr_fourmis -= 1
 
@@ -241,8 +200,16 @@ class Colonie:
         return None
 
     def compute_princess_proba(self):
+
         """
-        compute change of getting a princess
-        :return:
+        Calcule la probalité de création d'une autre reine en créant une princesse.
+
+        Pre : stock de nourriture doit être un entier non nul
+              le nombre de fourmi doit être positif
+              et reine doit être une instance de la classe Reine
+
+
+        Post : Retourne 0 ou 1 en fonction du résultat du calcul. 1 si nouvelle princesse, 0 si pas.
         """
+
         return self.reine.reproduction_rate *(self.__stock_nourriture / self.nbr_fourmis)
