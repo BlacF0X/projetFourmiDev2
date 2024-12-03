@@ -22,7 +22,7 @@ liste_source = []
 nombre_de_fourmis = 500
 quantite_nouriture = 2000
 nbr_colonie = 0
-liste_colonies.append(Colonie(Reine(), nombre_de_fourmis, numero=0))
+liste_colonies.append([Colonie(Reine(), nombre_de_fourmis, numero=0),0])
 
 
 colonie_selectionnee = None
@@ -52,7 +52,8 @@ while True:
     screen.fill((211, 192, 157))
 
 
-    for colonie in liste_colonies:
+    for col in liste_colonies:
+        colonie = col[0]
         distance = math.sqrt((mouse_pos[0] - colonie.position[0]) ** 2 +
                              (mouse_pos[1] - colonie.position[1]) ** 2)
         if distance <= colonie.calculate_radius(nombre_de_fourmis):
@@ -72,9 +73,9 @@ while True:
         if r is not None:
             nbr_colonie += 1
             print(r)
-            liste_colonies.append(
+            liste_colonies.append([
                 Colonie(r, colonie.nbr_fourmis // 3, position=(random.randint(0, 1500), random.randint(0, 800)),
-                        numero=nbr_colonie))
+                        numero=nbr_colonie),0])
             colonie.new_col()
 
 

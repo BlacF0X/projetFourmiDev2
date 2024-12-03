@@ -73,21 +73,7 @@ class Colonie:
                 if len(self.pos_enemy) == 0:
                     f.angers = False
                 if not f.porte:
-                    for col in liste_col:
-                        if abs(f.position[0] - col.position[0]) < (col.radius//2) and abs(
-                                f.position[1] - col.position[1]) < (col.radius//2) and col != self:
-                            if col.position not in self.pos_enemy:
-                                self.pos_enemy.append(col.position)
-                            pass
-                            if col.reine.force >= self.reine.force:
-                                self.remove_one()
-                            elif col.reine.force <= self.reine.force:
-                                col.remove_one()
-                            else:
-                                f.life -= col.reine.force
-                            if col.nbr_fourmis <=0 :
-                                self.pos_enemy.remove(col.position)
-                                liste_col.remove(col)
+                    self.enemy_col_action(liste_col,f)
                     self.depot_action(liste_nourriture,f)
                     self.f_not_porte_action(f)
                 elif f.porte:
@@ -104,6 +90,7 @@ class Colonie:
                     Ouvriere(self.nbr_fourmis + 1, l.speed, l.life, pos=self.position, ratio_besoin=l.ratio))
                 self.nbr_fourmis = len(self.fourmis)
         print()
+        print('enemy_pos:',self.pos_enemy)
         print('nombre de fourmis: ' + str(self.nbr_fourmis))
         print('stock de nourriture: ' + str(self.__stock_nourriture))
         print('nombre de larves: ' + str(len(self.larves)))
@@ -116,6 +103,20 @@ class Colonie:
         """
         return self.reine.reproduction_rate *(self.__stock_nourriture / self.nbr_fourmis)
 
+    def enemy_col_action(self,liste_colo,fourmi):
+        for colonie in liste_colo:
+            col = colonie[0]
+            if fourmi.check_proximity(col,(col.radius // 2)) and col != self:
+                if col.position not in self.pos_enemy:
+                    self.pos_enemy.append(col.position)
+                    colonie[1] += 1
+                if col.reine.force >= self.reine.force:
+                    self.remove_one()
+                elif col.reine.force <= self.reine.force:
+                    col.remove_one()
+                if col.nbr_fourmis <= 0:
+                    self.pos_enemy.remove(col.position)
+                    colonie[1] -= 1
     def depot_action(self,liste_nour,fourmi):
         for depot_nourriture in liste_nour:
             depot: Nourriture = depot_nourriture[0]
