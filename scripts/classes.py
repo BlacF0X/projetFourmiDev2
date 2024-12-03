@@ -2,8 +2,7 @@ import pygame as pg
 import random
 import math
 
-from projetFourmiDev2.reine import Reine
-
+from reine import Reine
 
 class Nourriture:
     def __init__(self, quantite=3000):
@@ -245,3 +244,15 @@ class Colonie:
         :return:
         """
         return self.reine.reproduction_rate *(self.__stock_nourriture / self.nbr_fourmis)
+
+    def save_data(self, filename="data.txt"):
+        """
+        Sauvegarde les données de la colonie dans un fichier texte.
+        """
+        with open(filename, "a") as file:
+            file.write(f"Colonie {self.number} :\n")
+            file.write(f"  Nombre de fourmis : {self.nbr_fourmis}\n")
+            file.write(f"  Stock de nourriture : {self.__stock_nourriture}\n")
+            file.write("\n")
+
+
