@@ -1,9 +1,6 @@
 import pygame as pg
 import math
 import random
-
-# Importation de chaque classe
-
 from classes.colonies import Colonie
 from classes.nourriture import Nourriture
 from classes.reine import Reine
@@ -49,8 +46,10 @@ while True:
                     colonie_selectionnee = colonie
                     print(f'Colonie numéro {colonie.number} : {colonie.nbr_fourmis} fourmis')
 
+    background_image = pg.image.load("image/background_colony.jpg")
 
-    screen.fill((211, 192, 157))
+    screen.blit(background_image,(0, 0))
+    screen.blit(background_image, (980, 0))
 
 
     for colonie in liste_colonies:

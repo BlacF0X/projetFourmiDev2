@@ -11,6 +11,15 @@ class Reine:
         self.force = force
 
     def create_princess(self):
+        """
+
+        Crée une nouvelle reine basée sur les attributs précédents
+
+        Pré : self doit être une reine
+
+        Post : recrée une reine basée sur les attributs précedents ayant une chance d'être modifiés
+
+        """
         return Reine(
             self.speed + random.uniform(-self.gene_change_chance, self.gene_change_chance),
             self.life + random.uniform(-self.gene_change_chance, self.gene_change_chance),
