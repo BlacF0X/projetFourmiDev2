@@ -1,5 +1,6 @@
-from scripts.classes.reine import Reine
-
+import pygame as pg
+import random
+from reine import Reine
 
 class Ouvriere:
     def __init__(self, nbr, speed=1.0, vie=100.0, pos=[0, 0], ratio_besoin=0.1, force=28.0):

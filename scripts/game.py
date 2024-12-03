@@ -1,7 +1,12 @@
 import pygame as pg
-from sys import exit
-from scripts.classes.colonies import *
-from scripts.classes.reine import Reine
+from idna.idnadata import scripts
+
+# Importation de chaque classe
+
+from classes.colonies import Colonie
+from classes.nourriture import Nourriture
+from classes.reine import Reine
+
 
 
 

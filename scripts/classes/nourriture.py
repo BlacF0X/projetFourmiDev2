@@ -1,4 +1,4 @@
-
+import random
 
 class Nourriture:
     def __init__(self, quantite=3000):
