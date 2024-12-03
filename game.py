@@ -4,7 +4,7 @@ import math
 from sys import exit
 
 from scripts.classes import *
-
+from reine import Reine
 pg.init()
 
 
