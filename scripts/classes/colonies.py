@@ -1,7 +1,6 @@
 import pygame as pg
 import random
-import math
-from GitHub.projetFourmiDev2.reine import Reine
+from GitHub.projetFourmiDev2.scripts.classes.reine import Reine
 
 
 

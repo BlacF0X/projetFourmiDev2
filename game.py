@@ -1,10 +1,9 @@
-import pygame as pg
-import random
-import math
 from sys import exit
+from GitHub.projetFourmiDev2.scripts.classes.colonies import *
+from GitHub.projetFourmiDev2.scripts.classes.reine import Reine
 
-from scripts.classes import *
-from reine import Reine
+
+
 pg.init()
 
 
