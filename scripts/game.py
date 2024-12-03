@@ -1,5 +1,6 @@
 import pygame as pg
-from idna.idnadata import scripts
+import math
+import random
 
 # Importation de chaque classe
 
