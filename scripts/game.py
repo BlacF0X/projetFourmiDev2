@@ -1,6 +1,7 @@
+import pygame as pg
 from sys import exit
-from GitHub.projetFourmiDev2.scripts.classes.colonies import *
-from GitHub.projetFourmiDev2.scripts.classes.reine import Reine
+from scripts.classes.colonies import *
+from scripts.classes.reine import Reine
 
 
 

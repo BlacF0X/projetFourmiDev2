@@ -1,8 +1,5 @@
 import pygame as pg
 import random
-from GitHub.projetFourmiDev2.scripts.classes.reine import Reine
-
-
 
 
 class Nourriture:
