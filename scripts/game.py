@@ -8,9 +8,6 @@ from classes.colonies import Colonie
 from classes.nourriture import Nourriture
 from classes.reine import Reine
 
-
-
-
 pg.init()
 
 
