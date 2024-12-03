@@ -1,8 +1,9 @@
 import pygame as pg
 import random
 import math
+from GitHub.projetFourmiDev2.reine import Reine
 
-from projetFourmiDev2.reine import Reine
+
 
 
 class Nourriture:
