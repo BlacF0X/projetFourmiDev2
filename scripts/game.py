@@ -42,7 +42,6 @@ while True:
             mouse_pos = pg.mouse.get_pos()
             colonie_selectionnee = None
             for colonie in liste_colonies:
-
                 distance = math.sqrt((mouse_pos[0] - colonie.position[0]) ** 2 +
                                      (mouse_pos[1] - colonie.position[1]) ** 2)
                 if distance <= colonie.calculate_radius(nombre_de_fourmis):
@@ -56,8 +55,6 @@ while True:
     for colonie in liste_colonies:
         distance = math.sqrt((mouse_pos[0] - colonie.position[0]) ** 2 +
                              (mouse_pos[1] - colonie.position[1]) ** 2)
-
-
         if distance <= colonie.calculate_radius(nombre_de_fourmis):
             colonie_hover = colonie
 
@@ -66,7 +63,6 @@ while True:
         if colonie.nbr_fourmis // (nombre_de_fourmis // 10) < 1:
             pg.draw.circle(screen, (99, 47, 26), colonie.position, 1)
         else:
-
             if colonie == colonie_hover:
                 pg.draw.circle(screen, (0, 0, 255), colonie.position,
                                colonie.calculate_radius(nombre_de_fourmis) + 5, 3)  # Contour doré
@@ -83,11 +79,13 @@ while True:
 
 
     for source in liste_source:
-        pg.draw.circle(screen, (0, 255, 0), source.position,
-                       source.quantite_nourriture // (quantite_nouriture // 10))
+        pg.draw.circle(screen, (0, 255, 0), source[0].position,
+                       source[0].quantite_nourriture // (quantite_nouriture // 10))
+        if source[0].quantite_nourriture <= 0 and source[1] <= 0:
+            liste_source.remove(source)
     source_spawn = random.random()
     if source_spawn >= 0.99 and len(liste_source) < 7:
-        liste_source.append(Nourriture(quantite_nouriture))
+        liste_source.append([Nourriture(quantite_nouriture),0])
         spawn = 1
     spawn += 1
 

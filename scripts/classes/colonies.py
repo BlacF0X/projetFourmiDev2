@@ -1,6 +1,7 @@
 import pygame as pg
 import random
 
+from scripts.classes.nourriture import Nourriture
 # Importation des classes utilisées
 
 from scripts.classes.reine import Reine
@@ -67,16 +68,7 @@ class Colonie:
                 self.__stock_nourriture = 0
             if len(self.pos_nourriture) == 0:
                 f.random_move()
-                for depot_nourriture in liste_nourriture:
-                    if abs(f.position[0] - depot_nourriture.position[0]) < 15 and abs(
-                            f.position[1] - depot_nourriture.position[1]) < 15:
-                        if depot_nourriture.position not in self.pos_nourriture:
-                            self.pos_nourriture.append(depot_nourriture.position)
-                        f.porte = True
-                        f.color = (255, 0, 0)
-                        depot_nourriture.quantite_nourriture -= f.force
-                        f.destination = self.position
-                        break
+                self.depot_action(liste_nourriture, f)
             else:
                 if len(self.pos_enemy) == 0:
                     f.angers = False
@@ -96,19 +88,7 @@ class Colonie:
                             if col.nbr_fourmis <=0 :
                                 self.pos_enemy.remove(col.position)
                                 liste_col.remove(col)
-                    for depot_nourriture in liste_nourriture:
-                        if abs(f.position[0] - depot_nourriture.position[0]) < 15 and abs(
-                                f.position[1] - depot_nourriture.position[1]) < 15:
-                            if depot_nourriture.position not in self.pos_nourriture:
-                                self.pos_nourriture.append(depot_nourriture.position)
-                            f.porte = True
-                            f.color = (255, 0, 0)
-                            depot_nourriture.quantite_nourriture -= f.force
-                            f.destination = self.position
-                            if depot_nourriture.quantite_nourriture <= 0:
-                                liste_nourriture.remove(depot_nourriture)
-                                self.pos_nourriture.remove(depot_nourriture.position)
-                            break
+                    self.depot_action(liste_nourriture,f)
                     self.f_not_porte_action(f)
                 elif f.porte:
                     self.f_porte_action(f)
@@ -136,11 +116,26 @@ class Colonie:
         """
         return self.reine.reproduction_rate *(self.__stock_nourriture / self.nbr_fourmis)
 
+    def depot_action(self,liste_nour,fourmi):
+        for depot_nourriture in liste_nour:
+            depot: Nourriture = depot_nourriture[0]
+            if fourmi.check_proximity(depot, 15):
+                if depot.position not in self.pos_nourriture and depot.quantite_nourriture > 0:
+                    self.pos_nourriture.append(depot.position)
+                    depot_nourriture[1] += 1
+                fourmi.porte = True
+                fourmi.color = (255, 0, 0)
+                depot.remove_nourriture(fourmi.force)
+                fourmi.destination = self.position
+                if depot.quantite_nourriture <= 0 and depot.position in self.pos_nourriture:
+                    depot_nourriture[1] -= 1
+                    self.pos_nourriture.remove(depot.position)
+                return None
     def f_porte_action(self,fourmi):
         fourmi.destination = self.position
         fourmi.move_to_dest()
         fourmi.color = (255, 0, 0)
-        if abs(fourmi.position[0] - self.position[0]) <= 10 and abs(fourmi.position[1] - self.position[1]) <= 10:
+        if fourmi.check_proximity(self):
             fourmi.porte = False
             fourmi.color = (0, 0, 0)
             self.__stock_nourriture += fourmi.force
