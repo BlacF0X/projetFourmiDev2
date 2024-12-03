@@ -2,66 +2,38 @@ import pygame as pg
 import random
 import math
 from sys import exit
-from reine import Reine
 from scripts.classes import *
 
 pg.init()
 
-
-
 # Configuration de l'écran
 screen = pg.display.set_mode((1500, 800))
-screen.fill((211,192,157))
 pg.display.set_caption('Ant Sim')
 clock = pg.time.Clock()
 
-liste_colonies = []
-liste_source = []
-nombre_de_fourmis = 500
-quantite_nouriture = 2000
-nbr_colonie = 0
-liste_colonies.append(Colonie(Reine(),nombre_de_fourmis,numero=0))
+# Liste des fourmiss
+liste_fourmis = []
+for i in range(100):
+    liste_fourmis.append(Ant(i))
 
-frame_count = 0  # Ajout d'un compteur de frames
-spawn = 0
+# Boucle principales
 while True:
     for event in pg.event.get():
         if event.type == pg.QUIT:
             pg.quit()
             exit()
-    screen.fill((211,192,157))
-    for colonie in liste_colonies:
-        if colonie.nbr_fourmis <= 0:
-            liste_colonies.remove(colonie)
-        if colonie.nbr_fourmis//(nombre_de_fourmis//10) < 1:
-            col_circle = pg.draw.circle(screen,(99,47,26),colonie.position,1)
-        else:
-            col_circle = pg.draw.circle(screen, (99, 47, 26),colonie.position,colonie.calculate_radius(nombre_de_fourmis))
-        r = colonie.action(screen,liste_source)
-        if r is not None and len(liste_colonies) <= 5:
-            nbr_colonie += 1
-            print(r)
-            liste_colonies.append(Colonie(r,colonie.nbr_fourmis//3,position=(random.randint(0,1500),random.randint(0,800)),numero=nbr_colonie))
+#lalala
+    # Remplir l'écran avec une légère transparence pour créer l'effet de traînée
+    overlay = pg.Surface((1500, 800), pg.SRCALPHA)
+    overlay.fill((211, 192, 157, 15))  # Couleur du fond avec faible opacité
+    screen.blit(overlay, (0, 0))
 
-            colonie.new_col()
-
-        # Enregistrer les données toutes les 100 frames
-        if frame_count % 100 == 0:
-            colonie.save_data()
-
-    for source in liste_source:
-        col_circle = pg.draw.circle(screen, (0,255,0), source[0].position, source[0].quantite_nourriture//(quantite_nouriture//10))
-    source_spawn = random.random()
-    if source_spawn >= 0.99 and len(liste_source) < 7:
-        liste_source.append([Nourriture(quantite_nouriture),0])
-        spawn = 1
-    spawn += 1
+    # Mettre à jour chaque fourmi
+    for f in liste_fourmis:
+        f.move()
+        f.draw_trail(screen)  # Dessiner la traînée avant de dessiner la fourmi elle-même
+        screen.blit(f.image, f.rect)  # Dessiner la fourmi
 
     # Mise à jour de l'affichage
     pg.display.update()
     clock.tick(60)  # Limiter la boucle à 60 FPS
-
-    frame_count += 1  # Incrément du compteur de frames
-
-
-
