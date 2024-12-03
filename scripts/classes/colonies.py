@@ -2,6 +2,7 @@ import pygame as pg
 import random
 
 from scripts.classes.nourriture import Nourriture
+
 # Importation des classes utilisées
 
 from scripts.classes.reine import Reine

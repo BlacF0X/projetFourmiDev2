@@ -1,4 +1,4 @@
-import random
+,import random
 
 class Reine:
     def __init__(self, speed=2.0, vie=100.0, rep_rate=0.7, ratio_besoin=0.1, force=22.0):
