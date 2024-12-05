@@ -28,6 +28,8 @@ liste_colonies.append([Colonie(Reine(), nombre_de_fourmis, numero=0),0])
 
 colonie_selectionnee = None
 
+
+
 spawn = 1
 
 
@@ -67,8 +69,10 @@ while True:
                     colonie_selectionnee = colonie
                     print(f'Colonie numéro {colonie.number} : {colonie.nbr_fourmis} fourmis')
 
+    background_image = pg.image.load("image/background_colony.jpg")
 
-    screen.fill((211, 192, 157))
+    screen.blit(background_image,(0, 0))
+    screen.blit(background_image, (980, 0))
 
 
     for col in liste_colonies:

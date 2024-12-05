@@ -30,16 +30,47 @@ class Colonie:
 
 
     def calculate_radius(self,nbr_fourmis):
+
+        """
+        Calcule le rayon de la colonie et le met à jour. Basé sur la quantité de fourmis
+
+        Pré : nbr_fourmis doit être un int et strictement positif
+
+        Post : retourne le rayon calculé
+
+        """
         self.radius = self.nbr_fourmis // (nbr_fourmis // 10)
         return self.nbr_fourmis // (nbr_fourmis // 10)
 
     def new_col(self):
+
+        """
+        Divise le nombre de fourmis et la nourriture restante. Réduit donc la taille de la colonie.
+
+        Pré : self.nbr_fourmis doit être un int strictement positif
+              self.__stock_nourriture = doit être non nul
+
+        Post : le nombre de fourmis est mis à jour
+               le stock de nourriture est réduit de 90%
+
+
+        """
         for i in range(self.nbr_fourmis - 1,self.nbr_fourmis // 3,-1):
             self.fourmis.pop(i)
         self.nbr_fourmis = len(self.fourmis)
         self.__stock_nourriture = self.__stock_nourriture // 10
 
     def remove_one(self):
+
+        """
+        Supprime une fourmi de la colonie
+
+        Pre : la liste de fourmis doit contenir au moins une fourmi
+              nbr_fourmis doit être strictement positif
+
+        Post : Supprime la dernière fourmi de la liste des fourmis
+
+        """
         self.fourmis.pop(self.nbr_fourmis - 1)
         self.nbr_fourmis -= 1
 
@@ -97,10 +128,18 @@ class Colonie:
         return None
 
     def compute_princess_proba(self):
+
         """
-        compute change of getting a princess
-        :return:
+        Calcule la probalité de création d'une autre reine en créant une princesse.
+
+        Pre : stock de nourriture doit être un entier non nul
+              le nombre de fourmi doit être positif
+              et reine doit être une instance de la classe Reine
+
+
+        Post : Retourne 0 ou 1 en fonction du résultat du calcul. 1 si nouvelle princesse, 0 si pas.
         """
+
         return self.reine.reproduction_rate *(self.__stock_nourriture / self.nbr_fourmis)
 
     def enemy_col_action(self,liste_colo,fourmi):
