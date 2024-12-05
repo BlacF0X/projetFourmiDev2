@@ -75,6 +75,13 @@ class Colonie:
         self.nbr_fourmis -= 1
 
     def action(self, ecran, liste_nourriture=[],liste_col = []):
+        """
+        cette fonction fait toutes les actions pour la colonie et les fourmis afin de faire tourner la simulation
+        PRE : - ecran est un ecran pygame sur lequel dessiné
+              - liste_nourriture est une liste de sources de nourriture sous la forme [object source,int]
+              - liste_colonies est une liste contenant les colonies de la simulation sous la forme [object colonie,int]
+        POST : modifie les différents paramètres de la colonie ou des fourmis et/ou retourne  une nouvelle reine si une nouvelle colonie doit être créée
+        """
         nourriture_mult = 1
         if self.__larves > 0:
             nourriture_mult += 0.15
@@ -143,6 +150,12 @@ class Colonie:
         return self.reine.reproduction_rate *(self.__stock_nourriture / self.nbr_fourmis)
 
     def enemy_col_action(self,liste_colo,fourmi):
+        '''
+        cette fonction fait des checks pour chaque colonie de la simulation avec la fourmi et modifie le comportement de la foutmi en fonction
+        PRE : - liste_colo est une liste contenant les colonies de la simulation sous la forme [object colonie,int]
+              - fourmi est une instance de la classe fourmi
+        POST : modifie le comportement de la fourmi si elle entre en contact avec une colonie ennemie
+        '''
         for colonie in liste_colo:
             col = colonie[0]
             if fourmi.check_proximity(col,col.radius) and col != self:
@@ -158,6 +171,12 @@ class Colonie:
                     self.pos_enemy.remove(col.position)
                     colonie[1] -= 1
     def depot_action(self,liste_nour,fourmi):
+        '''
+        cette fonction fait des checks pour chaque source de nourriture de la simulation avec la fourmi et modifie le comportement de la fourmi en fonction
+        PRE : - liste_colo est une liste contenant les colonies de la simulation sous la forme [object source,int]
+              - fourmi est une instance de la classe fourmi
+        POST : modifie le comportement de la fourmi si elle entre en contact avec une source de nourriture
+        '''
         for depot_nourriture in liste_nour:
             depot: Nourriture = depot_nourriture[0]
             if fourmi.check_proximity(depot, 15):
@@ -173,6 +192,11 @@ class Colonie:
                     self.pos_nourriture.remove(depot.position)
                 return None
     def f_porte_action(self,fourmi):
+        '''
+        cette fonction est la liste d'actiona réalisé si la fourmi porte de la nourriture
+        PRE : fourmi est une instance de la classe fourmi
+        POST : modifie les different attributs de la fourmi et son comportement
+        '''
         fourmi.destination = self.position
         fourmi.move_to_dest()
         fourmi.color = (255, 0, 0)
@@ -184,6 +208,11 @@ class Colonie:
             self.__stock_nourriture -= fourmi.besoin_nourriture
 
     def f_not_porte_action(self,fourmi):
+        '''
+        cette fonction est la liste d'actiona réalisé si la fourmi ne porte pas de nourriture
+        PRE : fourmi est une instance de la classe fourmi
+        POST : modifie les different attributs de la fourmi et son comportement
+        '''
         if fourmi.life <= 20:
             if fourmi.check_proximity(self,5):
                 while fourmi.life <= 75 and fourmi.life >= 0:

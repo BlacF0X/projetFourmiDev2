@@ -36,6 +36,8 @@ spawn = 1
 def save_colonies(liste_colonies):
     """
     Sauvegarde les données de toutes les colonies dans un fichier texte en écrasant les anciennes données.
+    PRE : liste colonies est une liste contenant les colonies de la simulation sous la forme [colonie object,int]
+    POST : crée et modifie les fichier textes correspondant a chaques colonies
     """
 
     for col in liste_colonies:

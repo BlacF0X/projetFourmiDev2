@@ -1,8 +1,0 @@
-Colonie 0 :
-  Nombre de fourmis : 500
-  Stock de nourriture : 0
-
-Colonie 0 :
-  Nombre de fourmis : 500
-  Stock de nourriture : 0
-

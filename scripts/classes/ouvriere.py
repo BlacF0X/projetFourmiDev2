@@ -16,6 +16,10 @@ class Ouvriere:
         self.angers = False
 
     def move_to_dest(self):
+        """
+        Cette fonction fait bouger la fourmi vers sa destination en utilisant sa vitesse
+        post : modifie la position de la fourmi self en la rapprochant de sa cible (self.cible)
+        """
         dep_dir_x = 0
         dep_dir_y = 0
         if abs(self.destination[0] - self.position[0]) != 0:
@@ -37,6 +41,10 @@ class Ouvriere:
             self.life -= self.besoin_nourriture /10
 
     def random_move(self):
+        """
+        cette fonction fais bouger la fourmi de manière aléatoire vers une driection de base
+        POST : modifie la position de la fourmi self en la rapprochant d'une cible définie aléatoirement via sa direction(self.direction)
+        """
         self.color = (0, 0, 0)
         f_deplacement = [random.randint(1, 15), random.randint(1, 15)]
         self.direction += random.randint(-15, 15)
