@@ -15,9 +15,9 @@ class Reine:
 
         Crée une nouvelle reine basée sur les attributs précédents
 
-        Pré : self doit être une reine
+        Pré : -
 
-        Post : recrée une reine basée sur les attributs précedents ayant une chance d'être modifiés
+        Post : retourne une reine basée sur les attributs précedents ayant une chance d'être modifiés
 
         """
         return Reine(
