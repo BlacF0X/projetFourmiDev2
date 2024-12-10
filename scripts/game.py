@@ -24,13 +24,25 @@ nombre_de_fourmis = 500
 quantite_nouriture = 2000
 nbr_colonie = 0
 liste_colonies.append([Colonie(Reine(), nombre_de_fourmis, numero=0),0])
-
+nuke_image = pg.image.load("images/nuke_logo.png")
+nuke_image = pg.transform.scale(nuke_image,(20,20))
 
 colonie_selectionnee = None
 
-
+nuke_active = False
 
 spawn = 1
+
+def nuke_town(pos):
+    for i in range(-800,600,1):
+        if i < 0:
+            pg.draw.circle(screen, (0, 119, 0), pos, math.sqrt(abs(i)))
+        else:
+            pg.draw.circle(screen, (255,255,255), pos, abs(i)*2)
+        pg.display.update()
+        if i < 0:
+            pg.draw.circle(screen, (211, 192, 157), pos, math.sqrt(abs(i)))
+
 
 
 def save_colonies(liste_colonies):
@@ -60,6 +72,12 @@ while True:
         if event.type == pg.QUIT:
             pg.quit()
             exit()
+        elif event.type == pg.KEYDOWN:
+            if event.key == pg.K_n:
+                nuke_active = True
+        elif event.type == pg.MOUSEBUTTONDOWN and nuke_active:
+            nuke_town(mouse_pos)
+            exit()
         elif event.type == pg.MOUSEBUTTONDOWN:
             mouse_pos = pg.mouse.get_pos()
             colonie_selectionnee = None
@@ -71,11 +89,9 @@ while True:
                     colonie_selectionnee = colonie
                     print(f'Colonie numéro {colonie.number} : {colonie.nbr_fourmis} fourmis')
 
-    background_image = pg.image.load("image/background_colony.jpg")
-
-    screen.blit(background_image,(0, 0))
-    screen.blit(background_image, (980, 0))
-
+    screen.fill((211, 192, 157))
+    if nuke_active:
+        screen.blit(nuke_image,mouse_pos)
 
     for col in liste_colonies:
         colonie = col[0]
@@ -115,7 +131,6 @@ while True:
         spawn = 1
     spawn += 1
 
-
     if colonie_selectionnee:
 
         rect_width, rect_height = 200, 100
@@ -137,8 +152,8 @@ while True:
         screen.blit(text, (rect_x + 10, rect_y + 50))
 
 
-
-    save_colonies(liste_colonies)
+    if spawn % 120 == 0:
+        save_colonies(liste_colonies)
     pg.display.update()
     clock.tick(60)
 

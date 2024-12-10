@@ -42,7 +42,7 @@ class Ouvriere:
 
     def random_move(self):
         """
-        cette fonction fais bouger la fourmi de manière aléatoire vers une driection de base
+        Cette fonction fait bouger la fourmi de manière aléatoire vers une driection de base
         POST : modifie la position de la fourmi self en la rapprochant d'une cible définie aléatoirement via sa direction(self.direction)
         """
         self.color = (0, 0, 0)
@@ -59,4 +59,12 @@ class Ouvriere:
         self.move_to_dest()
 
     def check_proximity(self,cible,distance = 10):
+        '''
+        Cette fonction check la proximité entre la fourmi et la cible a une certaine distance
+
+        PRE : cible est une instance de colonie ou source qui doit avoir un argument position
+              distance est la distance de check entre la cible et la fourmi
+
+        POST : return True si la fourmi est assez proche de la cible
+        '''
         return abs(self.position[0] - cible.position[0]) < distance  and abs(self.position[1] - cible.position[1]) < distance

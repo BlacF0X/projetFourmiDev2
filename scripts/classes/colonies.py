@@ -170,9 +170,11 @@ class Colonie:
                 if col.nbr_fourmis <= 0:
                     self.pos_enemy.remove(col.position)
                     colonie[1] -= 1
+
+
     def depot_action(self,liste_nour,fourmi):
         '''
-        cette fonction fait des checks pour chaque source de nourriture de la simulation avec la fourmi et modifie le comportement de la fourmi en fonction
+        Cette fonction fait des checks pour chaque source de nourriture de la simulation avec la fourmi et modifie le comportement de la fourmi en fonction
         PRE : - liste_colo est une liste contenant les colonies de la simulation sous la forme [object source,int]
               - fourmi est une instance de la classe fourmi
         POST : modifie le comportement de la fourmi si elle entre en contact avec une source de nourriture
@@ -191,6 +193,8 @@ class Colonie:
                     depot_nourriture[1] -= 1
                     self.pos_nourriture.remove(depot.position)
                 return None
+
+
     def f_porte_action(self,fourmi):
         '''
         cette fonction est la liste d'actiona réalisé si la fourmi porte de la nourriture
