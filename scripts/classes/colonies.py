@@ -139,9 +139,9 @@ class Colonie:
         """
         Calcule la probalité de création d'une autre reine en créant une princesse.
 
-        Pre : stock de nourriture doit être un entier non nul
-              le nombre de fourmi doit être positif
-              et reine doit être une instance de la classe Reine
+        Pre : self.__stock_nourriture doit être un entier non nul
+              self.nbr_fourmis doit être positif
+              self.reine doit être une instance de la classe Reine
 
 
         Post : Retourne 0 ou 1 en fonction du résultat du calcul. 1 si nouvelle princesse, 0 si pas.
