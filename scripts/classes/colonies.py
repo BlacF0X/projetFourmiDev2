@@ -8,6 +8,7 @@ from scripts.classes.reine import Reine
 from scripts.classes.ouvriere import Ouvriere
 from scripts.classes.larve import Larve
 
+
 class Colonie:
     def __init__(self, reine: Reine, nbr_ants=0, position=(750, 400),numero = 0):
         self.number = numero
@@ -156,20 +157,21 @@ class Colonie:
               - fourmi est une instance de la classe fourmi
         POST : modifie le comportement de la fourmi si elle entre en contact avec une colonie ennemie
         '''
-        for colonie in liste_colo:
-            col = colonie[0]
-            if fourmi.check_proximity(col,col.radius) and col != self:
-                if col.position not in self.pos_enemy:
-                    print('added')
-                    self.pos_enemy.append(col.position)
-                    colonie[1] += 1
-                if col.reine.force >= self.reine.force:
-                    self.remove_one()
-                elif col.reine.force <= self.reine.force:
-                    col.remove_one()
-                if col.nbr_fourmis <= 0:
-                    self.pos_enemy.remove(col.position)
-                    colonie[1] -= 1
+        if len(liste_colo) > 1:
+            for colonie in liste_colo:
+                col = colonie[0]
+                if fourmi.check_proximity(col,col.radius) and col != self:
+                    if col.position not in self.pos_enemy:
+                        print('added')
+                        self.pos_enemy.append(col.position)
+                        colonie[1] += 1
+                    if col.reine.force >= self.reine.force:
+                        self.remove_one()
+                    elif col.reine.force <= self.reine.force:
+                        col.remove_one()
+                    if col.nbr_fourmis <= 0:
+                        self.pos_enemy.remove(col.position)
+                        colonie[1] -= 1
 
 
     def depot_action(self,liste_nour,fourmi):

@@ -32,39 +32,41 @@ pause = False
 simulation_speed = 2
 button_click_time = None
 clicked_button = None
+bout_souris_bas = False
 
 def draw_button(x, y, width, height, text, border_color, fill_color=None, text_color=(0, 0, 0)):
-    mouse_x, mouse_y = pg.mouse.get_pos()
-    is_hovered = x <= mouse_x <= x + width and y <= mouse_y <= y + height
-    border_width = 4 if is_hovered else 2
+    if not pause:
+        mouse_x, mouse_y = pg.mouse.get_pos()
+        is_hovered = x <= mouse_x <= x + width and y <= mouse_y <= y + height
+        border_width = 4 if is_hovered else 2
 
-    if fill_color:
-        pg.draw.rect(screen, fill_color, (x, y, width, height))
+        if fill_color:
+            pg.draw.rect(screen, fill_color, (x, y, width, height))
 
-    pg.draw.rect(screen, border_color, (x, y, width, height), border_width)
+        pg.draw.rect(screen, border_color, (x, y, width, height), border_width)
 
-    font = pg.font.Font(None, 28)
-    label = font.render(text, True, text_color)
-    screen.blit(label, (x + (width - label.get_width()) // 2, y + (height - label.get_height()) // 2))
+        font = pg.font.Font(None, 28)
+        label = font.render(text, True, text_color)
+        screen.blit(label, (x + (width - label.get_width()) // 2, y + (height - label.get_height()) // 2))
 
 def handle_buttons(mouse_pos):
-    global pause, simulation_speed, button_click_time, clicked_button
+    global pause, simulation_speed, button_click_time, clicked_button, bout_souris_bas
+    if bout_souris_bas:
+        if 1300 <= mouse_pos[0] <= 1450 and 10 <= mouse_pos[1] <= 40:
+            pause = not pause
+            clicked_button = "pause"
+            button_click_time = pg.time.get_ticks()
 
-    if 1300 <= mouse_pos[0] <= 1450 and 10 <= mouse_pos[1] <= 40:
-        pause = not pause
-        clicked_button = "pause"
-        button_click_time = pg.time.get_ticks()
+        elif 1300 <= mouse_pos[0] <= 1450 and 50 <= mouse_pos[1] <= 80:
+            simulation_speed = min(simulation_speed + 1, 7)
+            clicked_button = "accelerate"
+            button_click_time = pg.time.get_ticks()
 
-    elif 1300 <= mouse_pos[0] <= 1450 and 50 <= mouse_pos[1] <= 80:
-        simulation_speed = min(simulation_speed + 1, 7)
-        clicked_button = "accelerate"
-        button_click_time = pg.time.get_ticks()
-
-    elif 1300 <= mouse_pos[0] <= 1450 and 90 <= mouse_pos[1] <= 120:
-        simulation_speed = max(simulation_speed - 1, 1)
-        clicked_button = "slow_down"
-        button_click_time = pg.time.get_ticks()
-
+        elif 1300 <= mouse_pos[0] <= 1450 and 90 <= mouse_pos[1] <= 120:
+            simulation_speed = max(simulation_speed - 1, 1)
+            clicked_button = "slow_down"
+            button_click_time = pg.time.get_ticks()
+        bout_souris_bas = False
 spawn = 1
 
 def nuke_town(pos):
@@ -83,7 +85,7 @@ def save_colonies(liste_colonies):
     """
     Sauvegarde les données de toutes les colonies dans un fichier texte en écrasant les anciennes données.
     PRE : liste colonies est une liste contenant les colonies de la simulation sous la forme [colonie object,int]
-    POST : crée et modifie les fichier textes correspondant a chaques colonies
+    POST : crée et modifie les fichier textes correspondant à chaques colonies
     """
 
     for col in liste_colonies:
@@ -115,15 +117,11 @@ while True:
         elif event.type == pg.MOUSEBUTTONDOWN:
             mouse_pos = pg.mouse.get_pos()
             colonie_selectionnee = None
-            for col in liste_colonies:
-                colonie = col[0]
-                distance = math.sqrt((mouse_pos[0] - colonie.position[0]) ** 2 +
-                                     (mouse_pos[1] - colonie.position[1]) ** 2)
-                if distance <= colonie.calculate_radius(nombre_de_fourmis):
-                    colonie_selectionnee = colonie
-                    print(f'Colonie numéro {colonie.number} : {colonie.nbr_fourmis} fourmis')
+            bout_souris_bas = True
+        handle_buttons(mouse_pos)
 
-    screen.fill((211, 192, 157))
+    if not pause:
+        screen.fill((211,192,157))
     if nuke_active:
         screen.blit(nuke_image,mouse_pos)
 
@@ -131,14 +129,18 @@ while True:
         colonie = col[0]
         distance = math.sqrt((mouse_pos[0] - colonie.position[0]) ** 2 +
                              (mouse_pos[1] - colonie.position[1]) ** 2)
+        if distance <= colonie.calculate_radius(nombre_de_fourmis) and bout_souris_bas:
+            colonie_selectionnee = colonie
+            print(f'Colonie numéro {colonie.number} : {colonie.nbr_fourmis} fourmis')
+
         if distance <= colonie.calculate_radius(nombre_de_fourmis):
             colonie_hover = colonie
 
-        if colonie.nbr_fourmis <= 0:
-            liste_colonies.remove(colonie)
+        if colonie.nbr_fourmis <= 0 :
+            liste_colonies.remove(col)
 
-        if colonie.nbr_fourmis // (nombre_de_fourmis // 10) < 1:
-            pg.draw.circle(screen, (99, 47, 26), colonie.position, 1)
+        if colonie.nbr_fourmis // (nombre_de_fourmis // 10) < 2:
+            pg.draw.circle(screen, (99, 47, 26), colonie.position, 2)
         else:
             if colonie == colonie_hover:
                 pg.draw.circle(screen, (0, 0, 255), colonie.position,
@@ -146,42 +148,30 @@ while True:
             pg.draw.circle(screen, (99, 47, 26), colonie.position, colonie.calculate_radius(nombre_de_fourmis))
 
         if not pause:
-            r = colonie.action(screen, liste_source)
+            r = colonie.action(screen, liste_source,liste_colonies)
             if r is not None:
                 nbr_colonie += 1
-                liste_colonies.append(
+                liste_colonies.append([
                     Colonie(r, colonie.nbr_fourmis // 3, position=(random.randint(0, 1500), random.randint(0, 800)),
-                            numero=nbr_colonie))
+                            numero=nbr_colonie),0])
                 colonie.new_col()
-        r = colonie.action(screen, liste_source)
-        if r is not None and len(liste_colonies) <= 7:
-            nbr_colonie += 1
-            print(r)
-            liste_colonies.append([
-                Colonie(r, colonie.nbr_fourmis // 3, position=(random.randint(0, 1500), random.randint(0, 800)),
-                        numero=nbr_colonie),0])
-            colonie.new_col()
 
 
-    for source in liste_source:
-        pg.draw.circle(screen, (0, 255, 0), source.position,
-                       source.quantite_nourriture // (quantite_nouriture // 10))
+
 
     if not pause:
         source_spawn = random.random()
         if source_spawn >= 0.99 and len(liste_source) < 7:
-            liste_source.append(Nourriture(quantite_nouriture))
+            liste_source.append([Nourriture(quantite_nouriture),0])
             spawn = 1
         spawn += 1
-        pg.draw.circle(screen, (0, 255, 0), source[0].position,
-                       source[0].quantite_nourriture // (quantite_nouriture // 10))
-        if source[0].quantite_nourriture <= 0 and source[1] <= 0:
-            liste_source.remove(source)
-    source_spawn = random.random()
-    if source_spawn >= 0.99 and len(liste_source) < 7:
-        liste_source.append([Nourriture(quantite_nouriture),0])
-        spawn = 1
-    spawn += 1
+        for srce in liste_source:
+            source = srce[0]
+            pg.draw.circle(screen, (0, 255, 0), source.position,
+                           source.quantite_nourriture // (quantite_nouriture // 10))
+            if source.quantite_nourriture <= 0 and srce[1] <= 0:
+                liste_source.remove(srce)
+
 
 
     if colonie_selectionnee:
