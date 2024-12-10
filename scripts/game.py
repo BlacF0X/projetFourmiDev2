@@ -13,7 +13,7 @@ pg.init()
 
 screen = pg.display.set_mode((1500, 800))
 screen.fill((211, 192, 157))
-pg.display.set_caption('Ant Sim')
+pg.display.set_caption('Simulation de colonie de fourmis by Corentin | Lucas | Martin')
 clock = pg.time.Clock()
 
 liste_colonies = []
@@ -27,46 +27,43 @@ nuke_image = pg.transform.scale(nuke_image,(20,20))
 
 colonie_selectionnee = None
 
-nuke_active = False
 pause = False
 simulation_speed = 2
 button_click_time = None
 clicked_button = None
-bout_souris_bas = False
 
-def draw_button(x, y, width, height, text, border_color, fill_color=None, text_color=(0, 0, 0)):
-    if not pause:
-        mouse_x, mouse_y = pg.mouse.get_pos()
-        is_hovered = x <= mouse_x <= x + width and y <= mouse_y <= y + height
-        border_width = 4 if is_hovered else 2
+def dessine_bouton(x, y, width, height, text, border_color, fill_color, text_color=(0, 0, 0)):
+    mouse_x, mouse_y = pg.mouse.get_pos()
+    is_hovered = x <= mouse_x <= x + width and y <= mouse_y <= y + height
+    border_width = 4 if is_hovered else 2
 
-        if fill_color:
-            pg.draw.rect(screen, fill_color, (x, y, width, height))
+    if fill_color:
+        pg.draw.rect(screen, fill_color, (x, y, width, height))
 
-        pg.draw.rect(screen, border_color, (x, y, width, height), border_width)
+    pg.draw.rect(screen, border_color, (x, y, width, height), border_width)
 
-        font = pg.font.Font(None, 28)
-        label = font.render(text, True, text_color)
-        screen.blit(label, (x + (width - label.get_width()) // 2, y + (height - label.get_height()) // 2))
+    font = pg.font.Font(None, 28)
+    label = font.render(text, True, text_color)
+    screen.blit(label, (x + (width - label.get_width()) // 2, y + (height - label.get_height()) // 2))
 
 def handle_buttons(mouse_pos):
-    global pause, simulation_speed, button_click_time, clicked_button, bout_souris_bas
-    if bout_souris_bas:
-        if 1300 <= mouse_pos[0] <= 1450 and 10 <= mouse_pos[1] <= 40:
-            pause = not pause
-            clicked_button = "pause"
-            button_click_time = pg.time.get_ticks()
+    global pause, simulation_speed, button_click_time, clicked_button
 
-        elif 1300 <= mouse_pos[0] <= 1450 and 50 <= mouse_pos[1] <= 80:
-            simulation_speed = min(simulation_speed + 1, 7)
-            clicked_button = "accelerate"
-            button_click_time = pg.time.get_ticks()
+    if 1300 <= mouse_pos[0] <= 1450 and 10 <= mouse_pos[1] <= 40:
+        pause = not pause
+        clicked_button = "pause"
+        button_click_time = pg.time.get_ticks()
 
-        elif 1300 <= mouse_pos[0] <= 1450 and 90 <= mouse_pos[1] <= 120:
-            simulation_speed = max(simulation_speed - 1, 1)
-            clicked_button = "slow_down"
-            button_click_time = pg.time.get_ticks()
-        bout_souris_bas = False
+    elif 1300 <= mouse_pos[0] <= 1450 and 50 <= mouse_pos[1] <= 80:
+        simulation_speed = min(simulation_speed + 1, 7)
+        clicked_button = "accelerate"
+        button_click_time = pg.time.get_ticks()
+
+    elif 1300 <= mouse_pos[0] <= 1450 and 90 <= mouse_pos[1] <= 120:
+        simulation_speed = max(simulation_speed - 1, 1)
+        clicked_button = "slow_down"
+        button_click_time = pg.time.get_ticks()
+
 spawn = 1
 
 def nuke_town(pos):
@@ -144,7 +141,7 @@ while True:
         else:
             if colonie == colonie_hover:
                 pg.draw.circle(screen, (0, 0, 255), colonie.position,
-                               colonie.calculate_radius(nombre_de_fourmis) + 5, 3)  # Contour doré
+                               colonie.calculate_radius(nombre_de_fourmis) + 5, 3)
             pg.draw.circle(screen, (99, 47, 26), colonie.position, colonie.calculate_radius(nombre_de_fourmis))
 
         if not pause:
@@ -156,8 +153,9 @@ while True:
                             numero=nbr_colonie),0])
                 colonie.new_col()
 
-
-
+    for source in liste_source:
+        pg.draw.circle(screen, (0, 255, 0), source.position,
+                       source.quantite_nourriture // (quantite_nouriture // 10))
 
     if not pause:
         source_spawn = random.random()
@@ -165,17 +163,8 @@ while True:
             liste_source.append([Nourriture(quantite_nouriture),0])
             spawn = 1
         spawn += 1
-        for srce in liste_source:
-            source = srce[0]
-            pg.draw.circle(screen, (0, 255, 0), source.position,
-                           source.quantite_nourriture // (quantite_nouriture // 10))
-            if source.quantite_nourriture <= 0 and srce[1] <= 0:
-                liste_source.remove(srce)
-
-
 
     if colonie_selectionnee:
-
         rect_width, rect_height = 200, 100
         rect_x = colonie_selectionnee.position[0] - rect_width // 2
         rect_y = colonie_selectionnee.position[1] - colonie_selectionnee.calculate_radius(
@@ -185,7 +174,6 @@ while True:
 
         pg.draw.rect(screen, (255, 255, 255), (rect_x, rect_y, rect_width, rect_height))
         pg.draw.rect(screen, (0, 0, 0), (rect_x, rect_y, rect_width, rect_height), 2)
-
 
         font = pg.font.Font(None, 36)
         text = font.render(f'Colonie #{colonie_selectionnee.number}', True, (0, 0, 0))
@@ -199,9 +187,9 @@ while True:
     accel_fill = (200, 200, 200) if clicked_button == "accelerate" and current_time - button_click_time < 500 else None
     slow_fill = (200, 200, 200) if clicked_button == "slow_down" and current_time - button_click_time < 500 else None
 
-    draw_button(1300, 10, 150, 30, "Reprendre" if pause else "Pause", (0, 0, 0), pause_fill)
-    draw_button(1300, 50, 150, 30, "Accélérer", (0, 0, 0), accel_fill)
-    draw_button(1300, 90, 150, 30, "Ralentir", (0, 0, 0), slow_fill)
+    dessine_bouton(1300, 10, 150, 30, "Reprendre" if pause else "Pause", (0, 0, 0), pause_fill)
+    dessine_bouton(1300, 50, 150, 30, "Accélérer", (0, 0, 0), accel_fill)
+    dessine_bouton(1300, 90, 150, 30, "Ralentir", (0, 0, 0), slow_fill)
 
     if not pause:
         pg.time.delay(int(50 / simulation_speed))
@@ -210,4 +198,3 @@ while True:
         save_colonies(liste_colonies)
     pg.display.update()
     clock.tick(60)
-
