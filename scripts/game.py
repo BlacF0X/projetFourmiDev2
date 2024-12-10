@@ -9,7 +9,7 @@ pg.init()
 
 screen = pg.display.set_mode((1500, 800))
 screen.fill((211, 192, 157))
-pg.display.set_caption('Ant Sim')
+pg.display.set_caption('Simulation de colonie de fourmis by Corentin | Lucas | Martin')
 clock = pg.time.Clock()
 
 liste_colonies = []
@@ -25,7 +25,7 @@ simulation_speed = 2
 button_click_time = None
 clicked_button = None
 
-def draw_button(x, y, width, height, text, border_color, fill_color=None, text_color=(0, 0, 0)):
+def dessine_bouton(x, y, width, height, text, border_color, fill_color, text_color=(0, 0, 0)):
     mouse_x, mouse_y = pg.mouse.get_pos()
     is_hovered = x <= mouse_x <= x + width and y <= mouse_y <= y + height
     border_width = 4 if is_hovered else 2
@@ -142,9 +142,9 @@ while True:
     accel_fill = (200, 200, 200) if clicked_button == "accelerate" and current_time - button_click_time < 500 else None
     slow_fill = (200, 200, 200) if clicked_button == "slow_down" and current_time - button_click_time < 500 else None
 
-    draw_button(1300, 10, 150, 30, "Reprendre" if pause else "Pause", (0, 0, 0), pause_fill)
-    draw_button(1300, 50, 150, 30, "Accélérer", (0, 0, 0), accel_fill)
-    draw_button(1300, 90, 150, 30, "Ralentir", (0, 0, 0), slow_fill)
+    dessine_bouton(1300, 10, 150, 30, "Reprendre" if pause else "Pause", (0, 0, 0), pause_fill)
+    dessine_bouton(1300, 50, 150, 30, "Accélérer", (0, 0, 0), accel_fill)
+    dessine_bouton(1300, 90, 150, 30, "Ralentir", (0, 0, 0), slow_fill)
 
     if not pause:
         pg.time.delay(int(50 / simulation_speed))
