@@ -72,8 +72,9 @@ class Colonie:
         Post : Supprime la dernière fourmi de la liste des fourmis
 
         """
-        self.fourmis.pop(self.nbr_fourmis - 1)
-        self.nbr_fourmis -= 1
+        if self.nbr_fourmis > 0:
+            self.fourmis.pop(self.nbr_fourmis - 1)
+            self.nbr_fourmis -= 1
 
     def action(self, ecran, liste_nourriture=[],liste_col = []):
         """
@@ -160,7 +161,7 @@ class Colonie:
         if len(liste_colo) > 1:
             for colonie in liste_colo:
                 col = colonie[0]
-                if fourmi.check_proximity(col,col.radius) and col != self:
+                if fourmi.check_proximity(col,col.radius if col.radius > 2 else 2) and col != self:
                     if col.position not in self.pos_enemy:
                         print('added')
                         self.pos_enemy.append(col.position)
