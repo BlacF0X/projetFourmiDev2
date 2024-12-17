@@ -22,19 +22,36 @@ class Ouvriere:
         """
         dep_dir_x = 0
         dep_dir_y = 0
-        if abs(self.destination[0] - self.position[0]) != 0:
-            dep_dir_x = (self.destination[0] - self.position[0]) / abs(self.destination[0] - self.position[0])
-        if abs(self.destination[1] - self.position[1]) != 0:
-            dep_dir_y = (self.destination[1] - self.position[1]) / abs(self.destination[1] - self.position[1])
-        if abs(self.destination[0] / self.position[0]) <= 2:
-            dep_dist_x = self.speed + 0.1
-        else:
-            dep_dist_x = abs(self.destination[0] / self.position[0]) * self.speed
-        if abs(self.destination[1] / self.position[1]) <= 2:
-            dep_dist_y = self.speed + 0.1
-        else:
-            dep_dist_y = abs(self.destination[1] / self.position[1]) * self.speed
-        self.position = [self.position[0] + (dep_dir_x * dep_dist_x), self.position[1] + (dep_dir_y * dep_dist_y)]
+        try:
+            if abs(self.destination[0] - self.position[0]) != 0:
+                dep_dir_x = (self.destination[0] - self.position[0]) / abs(self.destination[0] - self.position[0])
+            if abs(self.destination[1] - self.position[1]) != 0:
+                dep_dir_y = (self.destination[1] - self.position[1]) / abs(self.destination[1] - self.position[1])
+            if abs(self.destination[0] / self.position[0]) <= 2:
+                dep_dist_x = self.speed + 0.1
+            else:
+                dep_dist_x = abs(self.destination[0] / self.position[0]) * self.speed
+            if abs(self.destination[1] / self.position[1]) <= 2:
+                dep_dist_y = self.speed + 0.1
+            else:
+                dep_dist_y = abs(self.destination[1] / self.position[1]) * self.speed
+        except ZeroDivisionError:
+            self.position[0]+=0.1
+            self.position[1]+=0.1
+            if abs(self.destination[0] - self.position[0]) != 0:
+                dep_dir_x = (self.destination[0] - self.position[0]) / abs(self.destination[0] - self.position[0])
+            if abs(self.destination[1] - self.position[1]) != 0:
+                dep_dir_y = (self.destination[1] - self.position[1]) / abs(self.destination[1] - self.position[1])
+            if abs(self.destination[0] / self.position[0]) <= 2:
+                dep_dist_x = self.speed + 0.1
+            else:
+                dep_dist_x = abs(self.destination[0] / self.position[0]) * self.speed
+            if abs(self.destination[1] / self.position[1]) <= 2:
+                dep_dist_y = self.speed + 0.1
+            else:
+                dep_dist_y = abs(self.destination[1] / self.position[1]) * self.speed
+        finally:
+            self.position = [self.position[0] + (dep_dir_x * dep_dist_x), self.position[1] + (dep_dir_y * dep_dist_y)]
         if self.porte:
             self.life -= (self.besoin_nourriture * self.force) / (self.force * 10)
         else:
@@ -68,3 +85,7 @@ class Ouvriere:
         POST : return True si la fourmi est assez proche de la cible
         '''
         return abs(self.position[0] - cible.position[0]) < distance  and abs(self.position[1] - cible.position[1]) < distance
+
+
+
+
