@@ -33,7 +33,7 @@ total_time = 0
 
 def arg_parse_get():
     parser=argparse.ArgumentParser(description='Démarrer la simulation de colonie de fourmis.')
-    parser.add_argument('--option',type=str.lower(),required=True,help='options to start the program (default-with_menu-max_colony-max_time )')
+    parser.add_argument('option',type=str.lower(),required=True,help='options to start the program (default-with_menu-max_colony-max_time )')
     parser.add_argument('--save_data',action = 'store_True',help=' pour sauvegardr les données sous forme de fichier texte')
     liste_option = ['with_menu','max_colony','max_time','default']
     args = parser.parse_args()
