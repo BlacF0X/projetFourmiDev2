@@ -59,16 +59,19 @@ def handle_buttons(mouse_pos):
         pause = not pause
         clicked_button = "pause"
         button_click_time = pg.time.get_ticks()
+        confirm = False
 
     elif 1300 <= mouse_pos[0] <= 1450 and 50 <= mouse_pos[1] <= 80:
         simulation_speed = min(simulation_speed + 1, 7)
         clicked_button = "accelerate"
         button_click_time = pg.time.get_ticks()
+        confirm = False
 
     elif 1300 <= mouse_pos[0] <= 1450 and 90 <= mouse_pos[1] <= 120:
         simulation_speed = max(simulation_speed - 1, 1)
         clicked_button = "slow_down"
         button_click_time = pg.time.get_ticks()
+        confirm = False
 
     elif 1300 <= mouse_pos[0] <= 1450 and 100 <= mouse_pos[1] <= 150:
         clicked_button = "Stop simulation"
@@ -224,14 +227,16 @@ while True:
 
     current_time = pg.time.get_ticks()
 
-    pause_fill = (200, 200, 200) if clicked_button == "pause" and current_time - button_click_time < 500 else None
-    accel_fill = (200, 200, 200) if clicked_button == "accelerate" and current_time - button_click_time < 500 else None
-    slow_fill = (200, 200, 200) if clicked_button == "slow_down" and current_time - button_click_time < 500 else None
+    #pause_fill = (0, 255, 0) if clicked_button == "pause" and current_time - button_click_time < 500 else None
+    #accel_fill = (0, 0, 255) if clicked_button == "accelerate" and current_time - button_click_time < 500 else None
+    #slow_fill = (0, 0, 255) if clicked_button == "slow_down" and current_time - button_click_time < 500 else None
+    #exit_fill = (255, 0, 0) if clicked_button == "stop_sim" and current_time - button_click_time < 500 else None
 
-    dessine_bouton(1300, 10, 150, 30, "Reprendre" if pause else "Pause", (0, 0, 0), pause_fill)
-    dessine_bouton(1300, 50, 150, 30, "Accélérer", (0, 0, 0), accel_fill)
-    dessine_bouton(1300, 90, 150, 30, "Ralentir", (0, 0, 0), slow_fill)
-    dessine_bouton(1300, 130, 150, 30, "Arrêter" if not confirm else "Confirmer ?", (255, 0, 0), slow_fill)
+
+    dessine_bouton(1300, 10, 150, 30, "Reprendre" if pause else "Pause",(0, 0, 0), (255,165,0))
+    dessine_bouton(1300, 50, 150, 30, "Accélérer", (0, 0, 0), (135,206,250))
+    dessine_bouton(1300, 90, 150, 30, "Ralentir", (0, 0, 0), (135,206,250))
+    dessine_bouton(1300, 130, 150, 30, "Arrêter" if not confirm else "Confirmer ?", (0, 0, 0), (220,20,60))
 
     if not pause:
         pg.time.delay(int(50 / simulation_speed))
