@@ -76,7 +76,7 @@ class Colonie:
             self.fourmis.pop(self.nbr_fourmis - 1)
             self.nbr_fourmis -= 1
 
-    def action(self, ecran, liste_nourriture=[],liste_col = []):
+    def action(self, ecran, liste_nourriture : list,liste_col : list):
         """
         cette fonction fait toutes les actions pour la colonie et les fourmis afin de faire tourner la simulation
         PRE : - ecran est un ecran pygame sur lequel dessiné
@@ -152,12 +152,12 @@ class Colonie:
         return self.reine.reproduction_rate *(self.__stock_nourriture / self.nbr_fourmis)
 
     def enemy_col_action(self,liste_colo,fourmi):
-        '''
+        """
         cette fonction fait des checks pour chaque colonie de la simulation avec la fourmi et modifie le comportement de la foutmi en fonction
         PRE : - liste_colo est une liste contenant les colonies de la simulation sous la forme [object colonie,int]
               - fourmi est une instance de la classe fourmi
         POST : modifie le comportement de la fourmi si elle entre en contact avec une colonie ennemie
-        '''
+        """
         if len(liste_colo) > 1:
             for colonie in liste_colo:
                 col = colonie[0]

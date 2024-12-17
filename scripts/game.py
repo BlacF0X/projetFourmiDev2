@@ -27,7 +27,8 @@ nuke_image = pg.image.load("images/nuke_logo.png")
 nuke_image = pg.transform.scale(nuke_image,(20,20))
 
 colonie_selectionnee = None
-colonie_disparue = 0
+colonie_disparue_bouffe = [0,[]]
+colonie_disparue_enemy = [0,[]]
 
 pause = False
 simulation_speed = 2
@@ -35,7 +36,7 @@ button_click_time = None
 clicked_button = None
 bout_souris_bas = False
 
-def dessine_bouton(x, y, width, height, text, border_color, fill_color, text_color=(0, 0, 0)):
+def dessine_bouton(x, y, width, height, texte, border_color, fill_color, text_color=(0, 0, 0)):
     mouse_x, mouse_y = pg.mouse.get_pos()
     is_hovered = x <= mouse_x <= x + width and y <= mouse_y <= y + height
     border_width = 4 if is_hovered else 2
@@ -46,7 +47,7 @@ def dessine_bouton(x, y, width, height, text, border_color, fill_color, text_col
     pg.draw.rect(screen, border_color, (x, y, width, height), border_width)
 
     font = pg.font.Font(None, 28)
-    label = font.render(text, True, text_color)
+    label = font.render(texte, True, text_color)
     screen.blit(label, (x + (width - label.get_width()) // 2, y + (height - label.get_height()) // 2))
 
 def handle_buttons(mouse_pos):
@@ -129,7 +130,7 @@ while True:
         screen.blit(nuke_image,mouse_pos)
 
     for col in liste_colonies:
-        colonie = col[0,[]]
+        colonie = col[0]
         distance = math.sqrt((mouse_pos[0] - colonie.position[0]) ** 2 +
                              (mouse_pos[1] - colonie.position[1]) ** 2)
         if distance <= colonie.calculate_radius(nombre_de_fourmis) and bout_souris_bas:
@@ -140,12 +141,24 @@ while True:
             colonie_hover = colonie
 
         if colonie.nbr_fourmis <= 0:
-            colonie_disparue += 1
+            colonie_disparue_bouffe[0] += 1
+            colonie_disparue_enemy[0] += 1
+            for i in colonie.pos_nourriture:
+                colonie_disparue_bouffe[1].append(i)
+            for i in colonie.pos_enemy:
+                colonie_disparue_enemy[1].append(i)
             liste_colonies.remove(col)
-        if colonie_disparue[0] > 0:
-            for pos in colonie_disparue[1]:
+        if colonie_disparue_bouffe[0] > 0:
+            for pos in colonie_disparue_bouffe[1]:
                 if pos in colonie.pos_nourriture:
                     colonie.pos_nourriture.remove(pos)
+        if colonie_disparue_enemy[0] > 0:
+            for pos in colonie_disparue_enemy[1]:
+                if pos in colonie.pos_enemy:
+                    colonie.pos_enemy.remove(pos)
+            for col in liste_colonies:
+                col[1] -= colonie_disparue_enemy[0]
+
         if colonie.nbr_fourmis // (nombre_de_fourmis // 10) < 2:
             pg.draw.circle(screen, (99, 47, 26), colonie.position, 2)
         else:
@@ -154,10 +167,9 @@ while True:
                                colonie.calculate_radius(nombre_de_fourmis) + 5, 3)
             pg.draw.circle(screen, (99, 47, 26), colonie.position, colonie.calculate_radius(nombre_de_fourmis))
             bout_souris_bas = False
-
         if not pause:
             r = colonie.action(screen, liste_source,liste_colonies)
-            if r is not None:
+            if r is not None and len(liste_colonies) < 10:
                 nbr_colonie += 1
                 liste_colonies.append([
                     Colonie(r, colonie.nbr_fourmis // 3, position=(random.randint(0, 1500), random.randint(0, 800)),
@@ -165,16 +177,17 @@ while True:
                 colonie.new_col()
 
     for srce in liste_source:
-        if colonie_disparue > 0:
-            srce[1] -= colonie_disparue
-
+        if colonie_disparue_bouffe[0] > 0:
+            srce[1] -= colonie_disparue_bouffe[0]
         source = srce[0]
         pg.draw.circle(screen, (0, 255, 0), source.position,
                        source.quantite_nourriture // (quantite_nouriture // 10))
         if srce[1] <= 0 and srce[0].quantite_nourriture <= 0:
             liste_source.remove(srce)
-    print(liste_colonies)
-    colonie_disparue = [0,[]]
+    print(colonie.number)
+    print(liste_source)
+    print(colonie.pos_nourriture)
+    colonie_disparue_bouffe = [0,[]]
     if not pause:
         source_spawn = random.random()
         if source_spawn >= 0.99 and len(liste_source) < 7:
