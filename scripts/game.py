@@ -4,13 +4,12 @@ import random
 import os
 
 # Importation de chaque classe
+
 from classes.colonies import Colonie
 from classes.nourriture import Nourriture
 from classes.reine import Reine
-from classes.Araignee import Araignee
 
 pg.init()
-
 
 screen = pg.display.set_mode((1500, 800))
 screen.fill((211, 192, 157))
@@ -90,9 +89,6 @@ def save_colonies(liste_colonies):
     PRE : liste colonies est une liste contenant les colonies de la simulation sous la forme [colonie object,int]
     POST : crée et modifie les fichier textes correspondant à chaques colonies
     """
-# Initialisation de l'araignée
-araignee = Araignee()
-araignee_spawned = False  # Indique si l'araignée est déjà apparue
 
     for col in liste_colonies:
         colonie = col[0]
@@ -132,22 +128,7 @@ while True:
         pg.draw.rect(screen,(211,192,157),(1250, 0, 350, 200))
     if nuke_active:
         screen.blit(nuke_image,mouse_pos)
-    screen.fill((211, 192, 157))
 
-    # Apparition aléatoire unique de l'araignée
-    if not araignee_spawned and random.random() < 0.01:
-        araignee.apparaître()
-        araignee_spawned = True
-
-    # Déplacer l'araignée et la faire attaquer les fourmis
-    araignee.deplacer()
-    araignee.tuer_fourmis(liste_colonies)
-
-    # Dessin de l'araignée
-    araignee.dessiner(screen)
-    araignee.disparaitre()
-
-    # Gestion des colonies
     for col in liste_colonies:
         colonie = col[0]
         distance = math.sqrt((mouse_pos[0] - colonie.position[0]) ** 2 +
