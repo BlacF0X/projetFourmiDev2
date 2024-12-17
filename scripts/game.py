@@ -35,6 +35,8 @@ simulation_speed = 2
 button_click_time = None
 clicked_button = None
 bout_souris_bas = False
+confirm = False
+exit_sim = False
 
 def dessine_bouton(x, y, width, height, texte, border_color, fill_color, text_color=(0, 0, 0)):
     mouse_x, mouse_y = pg.mouse.get_pos()
@@ -51,7 +53,7 @@ def dessine_bouton(x, y, width, height, texte, border_color, fill_color, text_co
     screen.blit(label, (x + (width - label.get_width()) // 2, y + (height - label.get_height()) // 2))
 
 def handle_buttons(mouse_pos):
-    global pause, simulation_speed, button_click_time, clicked_button
+    global pause, simulation_speed, button_click_time, clicked_button, exit_sim, confirm
 
     if 1300 <= mouse_pos[0] <= 1450 and 10 <= mouse_pos[1] <= 40:
         pause = not pause
@@ -66,6 +68,14 @@ def handle_buttons(mouse_pos):
     elif 1300 <= mouse_pos[0] <= 1450 and 90 <= mouse_pos[1] <= 120:
         simulation_speed = max(simulation_speed - 1, 1)
         clicked_button = "slow_down"
+        button_click_time = pg.time.get_ticks()
+
+    elif 1300 <= mouse_pos[0] <= 1450 and 100 <= mouse_pos[1] <= 150:
+        clicked_button = "Stop simulation"
+        if confirm:
+            exit_sim = True
+        else:
+            confirm = True
         button_click_time = pg.time.get_ticks()
 
 spawn = 1
@@ -107,7 +117,7 @@ while True:
     colonie_hover = None
 
     for event in pg.event.get():
-        if event.type == pg.QUIT:
+        if event.type == pg.QUIT or exit_sim:
             pg.quit()
             exit()
         elif event.type == pg.KEYDOWN:
@@ -221,6 +231,7 @@ while True:
     dessine_bouton(1300, 10, 150, 30, "Reprendre" if pause else "Pause", (0, 0, 0), pause_fill)
     dessine_bouton(1300, 50, 150, 30, "Accélérer", (0, 0, 0), accel_fill)
     dessine_bouton(1300, 90, 150, 30, "Ralentir", (0, 0, 0), slow_fill)
+    dessine_bouton(1300, 130, 150, 30, "Arrêter" if not confirm else "Confirmer ?", (255, 0, 0), slow_fill)
 
     if not pause:
         pg.time.delay(int(50 / simulation_speed))
