@@ -13,7 +13,7 @@ pg.init()
 
 screen = pg.display.set_mode((1500, 800))
 screen.fill((211, 192, 157))
-pg.display.set_caption('Simulation de colonie de fourmis by Corentin | Lucas | Martin')
+pg.display.set_caption('Simulation de colonie de fourmis')
 clock = pg.time.Clock()
 
 nuke_active = False
