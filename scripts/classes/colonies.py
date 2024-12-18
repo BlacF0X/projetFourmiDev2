@@ -28,13 +28,13 @@ class Colonie:
         self.larve_max = 50
 
     def __str__(self):
-        return (f'numero : {self.number}'
-                f'position : {self.position}'
-                f'radius : {self.radius}'
-                f'nombre de fourmis : {self.nbr_fourmis}'
-                f'stock de nourriture : {self.stock_nourriture}'
-                f'nombre de larves : {self.__larves}'
-                f'taille maximum de la pouponière : {self.larve_max}')
+        return (f'numero : {self.number}\n'
+                f'position : {self.position}\n'
+                f'radius : {self.radius}\n'
+                f'nombre de fourmis : {self.nbr_fourmis}\n'
+                f'stock de nourriture : {self.stock_nourriture}\n'
+                f'nombre de larves : {self.__larves}\n'
+                f'taille maximum de la pouponière : {self.larve_max}\n')
 
     @property
     def number(self):

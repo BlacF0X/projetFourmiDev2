@@ -141,7 +141,7 @@ def save_colonies(liste_colonies):
             file.write(f"  Nombre de fourmis : {colonie.nbr_fourmis}\n")
             file.write(f"  Stock de nourriture : {colonie.stock_nourriture}\n")
             if save_precise_bool:
-                file.write('-------------infos plus précises-------------')
+                file.write('-------------infos plus précises-------------\n')
                 file.write(f'Caractéristique de la reine:\n{str(colonie.reine)}')
                 file.write("\n")
                 file.write(f'Caractéristique plus poussée de la colonie:\n{str(colonie)}')
@@ -168,7 +168,7 @@ def main_loop():
 
     bout_souris_bas = False
     for file in os.listdir('scripts/data'):
-        if '.csv' in file:
+        if '.txt' in file:
             os.remove(os.path.join('scripts/data', file))
     while True:
         mouse_pos = pg.mouse.get_pos()
