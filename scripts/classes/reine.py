@@ -29,4 +29,8 @@ class Reine:
             self.force + (random.uniform(-self.gene_change_chance, self.gene_change_chance)*5))
 
     def __str__(self):
-        return f'vie : {self.life} || speed : {self.speed} || reproduction_rate : {self.reproduction_rate} || ratio : {self.ratio}'
+        return (f'vie : {self.life} '
+                f' speed : {self.speed} '
+                f' reproduction_rate : {self.reproduction_rate} '
+                f'ratio : {self.ratio}'
+                f' force : {self.force}')

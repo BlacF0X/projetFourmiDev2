@@ -1,5 +1,3 @@
-from operator import index
-
 import pygame as pg
 import math
 import random
@@ -7,9 +5,9 @@ import os
 import argparse
 # Importation de chaque classe
 
-from classes.colonies import Colonie
-from classes.nourriture import Nourriture
-from classes.reine import Reine
+from scripts.classes.colonies import Colonie
+from scripts.classes.nourriture import Nourriture
+from scripts.classes.reine import Reine
 
 pg.init()
 
@@ -25,6 +23,7 @@ clicked_button = None
 
 #argument du parse
 save_data_bool = False
+save_precise_bool = False
 max_colony = False
 total_colony = 0
 max_time = False
@@ -32,32 +31,38 @@ total_time = 0
 
 
 def arg_parse_get():
+    global save_data_bool,save_precise_bool
     parser=argparse.ArgumentParser(description='Démarrer la simulation de colonie de fourmis.')
-    parser.add_argument('option',type=str.lower(),required=True,help='options to start the program (default-with_menu-max_colony-max_time )')
-    parser.add_argument('--save_data',action = 'store_True',help=' pour sauvegardr les données sous forme de fichier texte')
-    liste_option = ['with_menu','max_colony','max_time','default']
+    parser.add_argument('--option',type=str,default='default',help='options to start the program (default-with_menu-max_colony-max_time )')
+    parser.add_argument('--save_data',action = 'store_true',help=' pour sauvegardr les données sous forme de fichier texte')
+    parser.add_argument('--precise_data',action = 'store_true',help='pour avoir des données plus précises dans les datas')
+    liste_option = ['with_menu','max_colony','max_time']
     args = parser.parse_args()
-    if args.option not in liste_option:
-        print('not an option. Options : default-with_menu-max_colony-max_time ')
+    option = args.option.lower()
+    if option not in liste_option:
+        print('not an option')
+        print('launching with default parameters')
     else:
-        ind = liste_option.index(args.option)
-    if ind == 0:
-        print('not implemented')
-    if ind == 1:
-        max_colony()
-    if ind == 2:
-        max_time()
-    if ind == 3:
-        pass
+        ind = liste_option.index(option)
+        if ind == 0:
+            print('not implemented')
+        elif ind == 1:
+            max_colony()
+        elif ind == 2:
+            max_time()
+    print('whut')
+    if args.save_data:
+        save_data_bool = True
+        if args.precise_data:
+            save_precise_bool = True
     main_loop()
-
 
 def max_time():
     global total_time,max_time
     max_time = True
     while not isinstance(total_time,int) or total_time <= 0:
         try:
-            total_time = int('indiquez combien de temp doit durer la simulation (en secondes)')
+            total_time = int(input('indiquez combien de temp doit durer la simulation (en secondes)'))
         except ValueError:
             print('vous devez entrez un nombre  + grand que 0')
     total_time = total_time*1000
@@ -65,11 +70,14 @@ def max_time():
 def max_colony():
     global total_colony,max_colony
     max_colony = True
-    while not isinstance(total_colony,int) or total_time <= 0:
+    while not isinstance(total_colony,int) or total_colony <= 0:
         try:
-            total_colony = int('indiquez combien de temp doit durer la simulation (en secondes)')
+            total_colony = int(input('indiquez le nombre de colonie dont vous voulez récolter les données '))
         except ValueError:
             print('vous devez entrez un nombre  + grand que 0')
+
+
+
 
 def dessine_bouton(x, y, width, height, texte, border_color, fill_color, text_color=(0, 0, 0)):
     mouse_x, mouse_y = pg.mouse.get_pos()
@@ -127,13 +135,21 @@ def save_colonies(liste_colonies):
 
     for col in liste_colonies:
         colonie = col[0]
-        filename = f'data/data_col_{colonie.number}.txt'
+        filename = f'scripts/data/data_col_{colonie.number}.txt'
         with open(filename, "a") as file:  # Mode "w" pour écraser
             file.write(f"Colonie {colonie.number} :\n")
             file.write(f"  Nombre de fourmis : {colonie.nbr_fourmis}\n")
-            file.write(f"  Stock de nourriture : {colonie._Colonie__stock_nourriture}\n")
-            file.write("\n")
+            file.write(f"  Stock de nourriture : {colonie.stock_nourriture}\n")
+            if save_precise_bool:
+                file.write('-------------infos plus précises-------------')
+                file.write(f'Caractéristique de la reine:\n{str(colonie.reine)}')
+                file.write("\n")
+                file.write(f'Caractéristique plus poussée de la colonie:\n{str(colonie)}')
+                file.write("\n")
 
+
+            file.write("----------------------------------------------------------------")
+            file.write('\n')
 def main_loop():
     spawn = 1
     nuke_active = False
@@ -143,7 +159,7 @@ def main_loop():
     quantite_nouriture = 2000
     nbr_colonie = 0
     liste_colonies.append([Colonie(Reine(), nombre_de_fourmis, numero=0), 0])
-    nuke_image = pg.image.load("images/nuke_logo.png")
+    nuke_image = pg.image.load("scripts/images/nuke_logo.png")
     nuke_image = pg.transform.scale(nuke_image, (20, 20))
 
     colonie_selectionnee = None
@@ -151,9 +167,9 @@ def main_loop():
     colonie_disparue_enemy = [0, []]
 
     bout_souris_bas = False
-
-    for file in os.listdir('data'):
-        os.remove(os.path.join('data', file))
+    for file in os.listdir('scripts/data'):
+        if '.csv' in file:
+            os.remove(os.path.join('scripts/data', file))
     while True:
         mouse_pos = pg.mouse.get_pos()
         colonie_hover = None
@@ -167,6 +183,7 @@ def main_loop():
                     nuke_active = True
             elif event.type == pg.MOUSEBUTTONDOWN and nuke_active:
                 nuke_town(mouse_pos)
+                pg.quit()
                 exit()
             elif event.type == pg.MOUSEBUTTONDOWN:
                 mouse_pos = pg.mouse.get_pos()
@@ -274,18 +291,23 @@ def main_loop():
         if not pause:
             pg.time.delay(int(50 / simulation_speed))
 
-        if spawn % 120 == 0:
+        if spawn % 120 == 0 and save_data_bool:
             save_colonies(liste_colonies)
         pg.display.update()
         time = pg.time.get_ticks()
         if max_colony or max_time:
-            if max_time and time>= total_time:
+            if max_time == True and time>= total_time:
+                print('stop_time')
                 pg.quit()
                 exit()
-            elif max_colony and nbr_colonie >= total_colony:
+            elif max_colony == True and nbr_colonie >= total_colony:
+                print('stop_col')
                 pg.quit()
                 exit()
+            else :
+                pass
+        print(nbr_colonie)
         clock.tick(60)
 
 if __name__ == '__main__':
-    main_loop()
+    arg_parse_get()

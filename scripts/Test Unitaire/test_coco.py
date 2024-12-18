@@ -1,10 +1,7 @@
 import unittest
-from unittest.mock import Mock
 from scripts.classes.colonies import Colonie
 from scripts.classes.reine import Reine
 from scripts.classes.ouvriere import Ouvriere
-from scripts.classes.larve import Larve
-from scripts.classes.nourriture import Nourriture
 import pygame as pg
 
 display = pg.display.set_mode((800, 600))
