@@ -8,7 +8,7 @@ class MockCible:
         self.position = position
 
 
-class TestLarve(unittest.TestCase):
+class test_larve(unittest.TestCase):
     def setUp(self):
 
         self.larve = Larve(speed=1.5, life=50, ratio=0.3, force=10, tm_to_spawn=80)
@@ -41,7 +41,7 @@ class TestLarve(unittest.TestCase):
             Larve(speed=1.5, life=50, ratio=0.3, force='oui')
 
 
-class TestOuvriere(unittest.TestCase):
+class test_ouvriere(unittest.TestCase):
     def setUp(self):
 
         self.ouvriere = Ouvriere(nbr=1, speed=2.0, vie=100.0, pos=(0, 2), ratio_besoin=0.1, force=30.0)
