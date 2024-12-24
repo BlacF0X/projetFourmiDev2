@@ -1,5 +1,4 @@
-import random
-
+,import random
 
 class Reine:
     def __init__(self, speed=2.0, vie=100.0, rep_rate=0.7, ratio_besoin=0.1, force=22.0):
@@ -12,6 +11,15 @@ class Reine:
         self.force = force
 
     def create_princess(self):
+        """
+
+        Crée une nouvelle reine basée sur les attributs précédents
+
+        Pré : -
+
+        Post : retourne une reine basée sur les attributs précedents ayant une chance d'être modifiés
+
+        """
         return Reine(
             self.speed + random.uniform(-self.gene_change_chance, self.gene_change_chance),
             self.life + random.uniform(-self.gene_change_chance, self.gene_change_chance),
