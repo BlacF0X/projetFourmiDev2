@@ -20,6 +20,8 @@ pause = False
 simulation_speed = 2
 button_click_time = None
 clicked_button = None
+confirm = False
+exit_sim = False
 
 #argument du parse
 save_data_bool = False
@@ -94,7 +96,7 @@ def dessine_bouton(x, y, width, height, texte, border_color, fill_color, text_co
     screen.blit(label, (x + (width - label.get_width()) // 2, y + (height - label.get_height()) // 2))
 
 def handle_buttons(mouse_pos):
-    global pause, simulation_speed, button_click_time, clicked_button
+    global pause, simulation_speed, button_click_time, clicked_button,exit_sim,confirm
 
     if 1300 <= mouse_pos[0] <= 1450 and 10 <= mouse_pos[1] <= 40:
         pause = not pause
@@ -110,6 +112,15 @@ def handle_buttons(mouse_pos):
         simulation_speed = max(simulation_speed - 1, 1)
         clicked_button = "slow_down"
         button_click_time = pg.time.get_ticks()
+
+    elif 1300 <= mouse_pos[0] <= 1450 and 100 <= mouse_pos[1] <= 150:
+        clicked_button = "Stop simulation"
+        if confirm:
+            exit_sim = True
+        else:
+            confirm = True
+        button_click_time = pg.time.get_ticks()
+
 
 
 
@@ -173,7 +184,6 @@ def main_loop():
     while True:
         mouse_pos = pg.mouse.get_pos()
         colonie_hover = None
-
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 pg.quit()
@@ -287,6 +297,7 @@ def main_loop():
         dessine_bouton(1300, 10, 150, 30, "Reprendre" if pause else "Pause", (0, 0, 0), pause_fill)
         dessine_bouton(1300, 50, 150, 30, "Accélérer", (0, 0, 0), accel_fill)
         dessine_bouton(1300, 90, 150, 30, "Ralentir", (0, 0, 0), slow_fill)
+        dessine_bouton(1300, 130, 150, 30, "Arrêter" if not confirm else "Confirmer ?", (0, 0, 0), (220, 20, 60))
 
         if not pause:
             pg.time.delay(int(50 / simulation_speed))
@@ -295,6 +306,9 @@ def main_loop():
             save_colonies(liste_colonies)
         pg.display.update()
         time = pg.time.get_ticks()
+        if exit_sim:
+            pg.quit()
+            exit()
         if max_colony or max_time:
             if max_time == True and time>= total_time:
                 print('stop_time')

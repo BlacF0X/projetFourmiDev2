@@ -4,11 +4,10 @@ import random
 from scripts.classes.nourriture import Nourriture
 from scripts.classes.reine import Reine
 from scripts.classes.ouvriere import Ouvriere
-from scripts.classes.larve import Larve
 
 
 class Colonie:
-    def __init__(self, reine: Reine, nbr_ants=0, position=(750, 400),numero = 0):
+    def __init__(self, reine: Reine, nbr_ants=0, position=(750, 400), numero=0):
         self.__number = numero
         self.nbr_fourmis = nbr_ants
         self.__stock_nourriture = 0
@@ -43,12 +42,12 @@ class Colonie:
     @property
     def stock_nourriture(self):
         return self.__stock_nourriture
+
     @stock_nourriture.setter
     def stock_nourriture(self, value):
         self.__stock_nourriture = value
 
-
-    def calculate_radius(self,nbr_fourmis):
+    def calculate_radius(self, nbr_fourmis):
 
         """
         Calcule le rayon de la colonie et le met à jour. Basé sur la quantité de fourmis
@@ -74,7 +73,7 @@ class Colonie:
 
 
         """
-        for i in range(self.nbr_fourmis - 1,self.nbr_fourmis // 3,-1):
+        for i in range(self.nbr_fourmis - 1, self.nbr_fourmis // 3, -1):
             self.fourmis.pop(i)
         self.nbr_fourmis = len(self.fourmis)
         self.stock_nourriture = self.stock_nourriture // 10
@@ -94,7 +93,7 @@ class Colonie:
             self.fourmis.pop(self.nbr_fourmis - 1)
             self.nbr_fourmis -= 1
 
-    def action(self, ecran, liste_nourriture : list,liste_col : list):
+    def action(self, ecran, liste_nourriture: list, liste_col: list):
         """
         cette fonction fait toutes les actions pour la colonie et les fourmis afin de faire tourner la simulation
         PRE : - ecran est un ecran pygame sur lequel dessiné
@@ -115,11 +114,8 @@ class Colonie:
                 print('new_reine')
                 return self.reine.create_princess()
             elif len(self.larves) < self.larve_max:
-                self.larves.append(Larve(
-                    self.reine.speed + random.uniform(-self.reine.gene_change_chance, self.reine.gene_change_chance),
-                    self.reine.life + random.uniform(-self.reine.gene_change_chance, self.reine.gene_change_chance),
-                    self.reine.ratio + random.uniform(-self.reine.gene_change_chance, self.reine.gene_change_chance),
-                    self.reine.force + random.uniform(-self.reine.gene_change_chance, self.reine.gene_change_chance)))
+                self.larves.append(self.reine.generate_larvae())
+
         for f in self.fourmis:
             pg.draw.circle(ecran, f.color, f.position, 1)
             if self.stock_nourriture < 0:
@@ -131,8 +127,8 @@ class Colonie:
                 if len(self.pos_enemy) == 0:
                     f.angers = False
                 if not f.porte:
-                    self.enemy_col_action(liste_col,f)
-                    self.depot_action(liste_nourriture,f)
+                    self.enemy_col_action(liste_col, f)
+                    self.depot_action(liste_nourriture, f)
                     self.f_not_porte_action(f)
                 elif f.porte:
                     self.f_porte_action(f)
@@ -162,9 +158,9 @@ class Colonie:
         Post : Retourne 0 ou 1 en fonction du résultat du calcul. 1 si nouvelle princesse, 0 si pas.
         """
 
-        return self.reine.reproduction_rate *(self.stock_nourriture / self.nbr_fourmis)
+        return self.reine.reproduction_rate * (self.stock_nourriture / self.nbr_fourmis)
 
-    def enemy_col_action(self,liste_colo,fourmi):
+    def enemy_col_action(self, liste_colo, fourmi):
         """
         cette fonction fait des checks pour chaque colonie de la simulation avec la fourmi et modifie le comportement de la foutmi en fonction
         PRE : - liste_colo est une liste contenant les colonies de la simulation sous la forme [object colonie,int]
@@ -174,7 +170,7 @@ class Colonie:
         if len(liste_colo) > 1:
             for colonie in liste_colo:
                 col = colonie[0]
-                if fourmi.check_proximity(col,col.radius if col.radius > 2 else 2) and col != self:
+                if fourmi.check_proximity(col, col.radius if col.radius > 2 else 2) and col != self:
                     if col.position not in self.pos_enemy:
                         print('added')
                         self.pos_enemy.append(col.position)
@@ -187,8 +183,7 @@ class Colonie:
                         self.pos_enemy.remove(col.position)
                         colonie[1] -= 1
 
-
-    def depot_action(self,liste_nour,fourmi):
+    def depot_action(self, liste_nour, fourmi):
         '''
         Cette fonction fait des checks pour chaque source de nourriture de la simulation avec la fourmi et modifie le comportement de la fourmi en fonction
         PRE : - liste_colo est une liste contenant les colonies de la simulation sous la forme [object source,int]
@@ -210,8 +205,7 @@ class Colonie:
                     self.pos_nourriture.remove(depot.position)
                 return None
 
-
-    def f_porte_action(self,fourmi):
+    def f_porte_action(self, fourmi):
         '''
         cette fonction est la liste d'actiona réalisé si la fourmi porte de la nourriture
         PRE : fourmi est une instance de la classe fourmi
@@ -227,14 +221,14 @@ class Colonie:
             fourmi.life += fourmi.besoin_nourriture
             self.stock_nourriture -= fourmi.besoin_nourriture
 
-    def f_not_porte_action(self,fourmi):
+    def f_not_porte_action(self, fourmi):
         '''
         cette fonction est la liste d'actiona réalisé si la fourmi ne porte pas de nourriture
         PRE : fourmi est une instance de la classe fourmi
         POST : modifie les different attributs de la fourmi et son comportement
         '''
         if fourmi.life <= 20:
-            if fourmi.check_proximity(self,5):
+            if fourmi.check_proximity(self, 5):
                 while fourmi.life <= 75 and fourmi.life >= 0:
                     if self.stock_nourriture > 0:
                         fourmi.life += fourmi.besoin_nourriture * 10

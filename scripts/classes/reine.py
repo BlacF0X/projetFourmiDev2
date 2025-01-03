@@ -1,5 +1,5 @@
 import random
-
+from scripts.classes.larve import Larve
 class Reine:
     def __init__(self, speed=2.0, vie=100.0, rep_rate=0.7, ratio_besoin=0.1, force=22.0):
         self.life = vie
@@ -9,6 +9,21 @@ class Reine:
         self.ratio = ratio_besoin
         self.besoin_nourriture = speed * ratio_besoin
         self.force = force
+
+    def __str__(self):
+        return (f'vie : {self.life} \n'
+                f' speed : {self.speed} \n'
+                f' reproduction_rate : {self.reproduction_rate} \n'
+                f'ratio : {self.ratio} \n'
+                f' force : {self.force} \n')
+
+
+    def generate_larvae(self):
+        return Larve(
+                    self.speed + random.uniform(-self.gene_change_chance, self.gene_change_chance),
+                    self.life + random.uniform(-self.gene_change_chance, self.gene_change_chance),
+                    self.ratio + random.uniform(-self.gene_change_chance, self.gene_change_chance),
+                    self.force + random.uniform(-self.gene_change_chance, self.gene_change_chance))
 
     def create_princess(self):
         """
@@ -28,9 +43,3 @@ class Reine:
             self.ratio + random.uniform(-self.gene_change_chance, self.gene_change_chance),
             self.force + (random.uniform(-self.gene_change_chance, self.gene_change_chance)*5))
 
-    def __str__(self):
-        return (f'vie : {self.life} \n'
-                f' speed : {self.speed} \n'
-                f' reproduction_rate : {self.reproduction_rate} \n'
-                f'ratio : {self.ratio} \n'
-                f' force : {self.force} \n')
